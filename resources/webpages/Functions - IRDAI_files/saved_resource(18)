@@ -1,0 +1,46 @@
+Liferay.Loader.define("frontend-js-alert-support-web@1.0.7/index", ['module', 'exports', 'require', 'frontend-js-metal-web$metal-dom'], function (module, exports, require) {
+  var define = undefined;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports["default"] = void 0;
+
+  var _metalDom = _interopRequireDefault(require("frontend-js-metal-web$metal-dom"));
+
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : { "default": obj };
+  }
+
+  /**
+   * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+   *
+   * This library is free software; you can redistribute it and/or modify it under
+   * the terms of the GNU Lesser General Public License as published by the Free
+   * Software Foundation; either version 2.1 of the License, or (at your option)
+   * any later version.
+   *
+   * This library is distributed in the hope that it will be useful, but WITHOUT
+   * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+   * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+   * details.
+   */
+  var handle;
+
+  var _default = function _default() {
+    if (!handle) {
+      handle = _metalDom["default"].delegate(document.body, 'click', '[data-dismiss="liferay-alert"]', function (event) {
+        event.preventDefault();
+
+        var container = _metalDom["default"].closest(event.delegateTarget, '.alert');
+
+        if (container) {
+          container.parentNode.removeChild(container);
+        }
+      });
+    }
+  };
+
+  exports["default"] = _default;
+  //# sourceMappingURL=index.js.map
+});
+//# sourceMappingURL=index.js.map

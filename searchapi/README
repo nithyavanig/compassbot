@@ -1,0 +1,70 @@
+# FastAPI Project
+
+This is a simple FastAPI project that demonstrates how to create a REST API.
+
+## Setup
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone <your-repo-url>
+   cd <your-repo-directory>
+   ```
+
+2. **Create and activate a virtual environment**:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   .\venv\Scripts\activate  # On Windows
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Running the Server
+
+To run the FastAPI server, execute the following command:
+
+```bash
+python main.py
+```
+
+The server will start on `localhost` at port `8000`. You can access it at `http://127.0.0.1:8000`.
+
+## API Endpoints
+
+- **GET /**: Returns a welcome message.
+
+  ```json
+  {
+    "Hello": "World"
+  }
+  ```
+
+- **GET /items/{item_id}**: Returns the item ID and an optional query parameter.
+  ```json
+  {
+    "item_id": 1,
+    "q": "example"
+  }
+  ```
+
+## Updating Dependencies
+
+If you install new dependencies, make sure to update `requirements.txt`:
+
+```bash
+pip freeze > requirements.txt
+```
+
+## License
+
+This project is licensed under the MIT License.
+
+```
+
+Feel free to customize this `README.md` file as needed for your project. Let me know if you need any more help! 😊
+```

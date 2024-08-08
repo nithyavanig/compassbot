@@ -1,0 +1,2261 @@
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/shared@3.3.0/lib/useTransitionHeight", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.useTransitionHeight = useTransitionHeight;
+
+    var _react = require("frontend-js-react-web$react");
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    function _unsupportedIterableToArray(o, minLen) {
+      if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+    }
+
+    function _arrayLikeToArray(arr, len) {
+      if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {
+        arr2[i] = arr[i];
+      }return arr2;
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    /**
+     * Removes the height style that triggers a transition when collapse
+     * @param collapseElementRef
+     */
+    function removeCollapseHeight(collapseElementRef) {
+      if (collapseElementRef && collapseElementRef.current) {
+        collapseElementRef.current.style.removeProperty('height');
+      }
+    }
+    /**
+     * Adds a height style that triggers a transition when collapsed
+     * @param collapseElementRef
+     */
+
+    function setCollapseHeight(collapseElementRef) {
+      if (collapseElementRef && collapseElementRef.current) {
+        // Cloned into a new array since `.reduce` is not a method on an HTMLCollection
+        var height = Array.prototype.slice.call(collapseElementRef.current.children).reduce(function (acc, child) {
+          return acc + child.clientHeight;
+        }, 0);
+        collapseElementRef.current.setAttribute('style', "height: ".concat(height, "px"));
+      }
+    }
+
+    function useTransitionHeight(visible, setVisible, contentRef) {
+      var _useState = (0, _react.useState)(false),
+          _useState2 = _slicedToArray(_useState, 2),
+          transitioning = _useState2[0],
+          setTransitioning = _useState2[1];
+
+      (0, _react.useEffect)(function () {
+        if (transitioning) {
+          setCollapseHeight(contentRef);
+
+          if (visible) {
+            removeCollapseHeight(contentRef);
+          }
+
+          var _window$getComputedSt = window.getComputedStyle(contentRef.current),
+              transitionDelay = _window$getComputedSt.transitionDelay,
+              transitionDuration = _window$getComputedSt.transitionDuration;
+
+          var totalDuration = (parseFloat(transitionDelay) + parseFloat(transitionDuration)) * 1000;
+          setTimeout(function () {
+            setVisible(!visible);
+            setTransitioning(false);
+
+            if (!visible) {
+              removeCollapseHeight(contentRef);
+            }
+          }, totalDuration);
+        }
+      }, [transitioning]);
+      var animate = (0, _react.useCallback)(function (event) {
+        event.preventDefault();
+
+        if (visible && !transitioning) {
+          setCollapseHeight(contentRef);
+        }
+
+        setTransitioning(true);
+      }, [transitioning, visible]);
+      return {
+        animate: animate,
+        transitioning: transitioning
+      };
+    }
+  }
+});
+//# sourceMappingURL=useTransitionHeight.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/shared@3.3.0/lib/index", ['module', 'exports', 'require', './Portal', './FocusScope', './getEllipsisItems', './Keys', './LinkOrButton', './sub', './useDebounce', './useFocusManagement', './useTransitionHeight'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    Object.defineProperty(exports, "ClayPortal", {
+      enumerable: true,
+      get: function get() {
+        return _Portal.ClayPortal;
+      }
+    });
+    Object.defineProperty(exports, "FocusScope", {
+      enumerable: true,
+      get: function get() {
+        return _FocusScope.FocusScope;
+      }
+    });
+    Object.defineProperty(exports, "getEllipsisItems", {
+      enumerable: true,
+      get: function get() {
+        return _getEllipsisItems.getEllipsisItems;
+      }
+    });
+    Object.defineProperty(exports, "Keys", {
+      enumerable: true,
+      get: function get() {
+        return _Keys.Keys;
+      }
+    });
+    Object.defineProperty(exports, "LinkOrButton", {
+      enumerable: true,
+      get: function get() {
+        return _LinkOrButton.LinkOrButton;
+      }
+    });
+    Object.defineProperty(exports, "sub", {
+      enumerable: true,
+      get: function get() {
+        return _sub.sub;
+      }
+    });
+    Object.defineProperty(exports, "useDebounce", {
+      enumerable: true,
+      get: function get() {
+        return _useDebounce.useDebounce;
+      }
+    });
+    Object.defineProperty(exports, "useFocusManagement", {
+      enumerable: true,
+      get: function get() {
+        return _useFocusManagement.useFocusManagement;
+      }
+    });
+    Object.defineProperty(exports, "useTransitionHeight", {
+      enumerable: true,
+      get: function get() {
+        return _useTransitionHeight.useTransitionHeight;
+      }
+    });
+    exports.noop = void 0;
+
+    var _Portal = require("./Portal");
+
+    var _FocusScope = require("./FocusScope");
+
+    var _getEllipsisItems = require("./getEllipsisItems");
+
+    var _Keys = require("./Keys");
+
+    var _LinkOrButton = require("./LinkOrButton");
+
+    var _sub = require("./sub");
+
+    var _useDebounce = require("./useDebounce");
+
+    var _useFocusManagement = require("./useFocusManagement");
+
+    var _useTransitionHeight = require("./useTransitionHeight");
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var noop = function noop() {};
+
+    exports.noop = noop;
+  }
+});
+//# sourceMappingURL=index.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Body", ['module', 'exports', 'require', 'frontend-taglib-clay$classnames', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _classnames = _interopRequireDefault(require("frontend-taglib-clay$classnames"));
+
+    var _react = _interopRequireWildcard(require("frontend-js-react-web$react"));
+
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function") return null;var cache = new WeakMap();_getRequireWildcardCache = function _getRequireWildcardCache() {
+        return cache;
+      };return cache;
+    }
+
+    function _interopRequireWildcard(obj) {
+      if (obj && obj.__esModule) {
+        return obj;
+      }if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return { default: obj };
+      }var cache = _getRequireWildcardCache();if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }var newObj = {};var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
+          }
+        }
+      }newObj.default = obj;if (cache) {
+        cache.set(obj, newObj);
+      }return newObj;
+    }
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _extends() {
+      _extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }return target;
+      };return _extends.apply(this, arguments);
+    }
+
+    var ClayModalBody = function ClayModalBody(_ref) {
+      var children = _ref.children,
+          _ref$iFrameProps = _ref.iFrameProps,
+          iFrameProps = _ref$iFrameProps === void 0 ? {} : _ref$iFrameProps,
+          scrollable = _ref.scrollable,
+          url = _ref.url;
+      var elementRef = (0, _react.useRef)(null);
+      (0, _react.useEffect)(function () {
+        var onKeyDown = function onKeyDown(event) {
+          if (elementRef.current && (event.key === 'ArrowUp' || event.key === 'ArrowDown') && !elementRef.current.contains(document.activeElement)) {
+            if (event.defaultPrevented) {
+              return;
+            }
+
+            elementRef.current.focus();
+          }
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+        return function () {
+          document.removeEventListener('keydown', onKeyDown);
+        };
+      }, [elementRef]);
+      return (/*#__PURE__*/_react.default.createElement("div", {
+          className: (0, _classnames.default)('modal-body', {
+            'inline-scroller': scrollable,
+            'modal-body-iframe': url
+          }),
+          ref: elementRef,
+          tabIndex: scrollable ? -1 : undefined
+        }, url ? /*#__PURE__*/_react.default.createElement("iframe", _extends({}, iFrameProps, {
+          src: url,
+          title: url
+        })) : children)
+      );
+    };
+
+    var _default = ClayModalBody;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Body.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Context", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var context = _react.default.createContext({});
+
+    context.displayName = 'ClayModalContext';
+    var _default = context;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Context.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Footer", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var ClayModalFooter = function ClayModalFooter(_ref) {
+      var first = _ref.first,
+          last = _ref.last,
+          middle = _ref.middle;
+      return (/*#__PURE__*/_react.default.createElement("div", {
+          className: "modal-footer"
+        }, /*#__PURE__*/_react.default.createElement("div", {
+          className: "modal-item-first"
+        }, first), /*#__PURE__*/_react.default.createElement("div", {
+          className: "modal-item"
+        }, middle), /*#__PURE__*/_react.default.createElement("div", {
+          className: "modal-item-last"
+        }, last))
+      );
+    };
+
+    var _default = ClayModalFooter;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Footer.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Header", ['module', 'exports', 'require', '@frontend-taglib-clay$clayui/button', '@frontend-taglib-clay$clayui/icon', 'frontend-taglib-clay$classnames', 'frontend-js-react-web$react', './Context'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = exports.Subtitle = exports.SubtitleSection = exports.TitleIndicator = exports.Title = exports.TitleSection = exports.Item = exports.ItemGroup = void 0;
+
+    var _button = _interopRequireDefault(require("@frontend-taglib-clay$clayui/button"));
+
+    var _icon = _interopRequireDefault(require("@frontend-taglib-clay$clayui/icon"));
+
+    var _classnames = _interopRequireDefault(require("frontend-taglib-clay$classnames"));
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    var _Context = _interopRequireDefault(require("./Context"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _extends() {
+      _extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }return target;
+      };return _extends.apply(this, arguments);
+    }
+
+    function _objectWithoutProperties(source, excluded) {
+      if (source == null) return {};var target = _objectWithoutPropertiesLoose(source, excluded);var key, i;if (Object.getOwnPropertySymbols) {
+        var sourceSymbolKeys = Object.getOwnPropertySymbols(source);for (i = 0; i < sourceSymbolKeys.length; i++) {
+          key = sourceSymbolKeys[i];if (excluded.indexOf(key) >= 0) continue;if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;target[key] = source[key];
+        }
+      }return target;
+    }
+
+    function _objectWithoutPropertiesLoose(source, excluded) {
+      if (source == null) return {};var target = {};var sourceKeys = Object.keys(source);var key, i;for (i = 0; i < sourceKeys.length; i++) {
+        key = sourceKeys[i];if (excluded.indexOf(key) >= 0) continue;target[key] = source[key];
+      }return target;
+    }
+
+    var ItemGroup = function ItemGroup(_ref) {
+      var children = _ref.children,
+          className = _ref.className,
+          otherProps = _objectWithoutProperties(_ref, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-item-group', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.ItemGroup = ItemGroup;
+
+    var Item = function Item(_ref2) {
+      var children = _ref2.children,
+          className = _ref2.className,
+          shrink = _ref2.shrink,
+          otherProps = _objectWithoutProperties(_ref2, ["children", "className", "shrink"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-item', className, {
+            'modal-item-shrink': shrink
+          })
+        }, otherProps), children)
+      );
+    };
+
+    exports.Item = Item;
+
+    var TitleSection = function TitleSection(_ref3) {
+      var children = _ref3.children,
+          className = _ref3.className,
+          otherProps = _objectWithoutProperties(_ref3, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-title-section', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.TitleSection = TitleSection;
+
+    var Title = function Title(_ref4) {
+      var children = _ref4.children,
+          className = _ref4.className,
+          otherProps = _objectWithoutProperties(_ref4, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-title', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.Title = Title;
+
+    var TitleIndicator = function TitleIndicator(_ref5) {
+      var children = _ref5.children,
+          className = _ref5.className,
+          otherProps = _objectWithoutProperties(_ref5, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-title-indicator', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.TitleIndicator = TitleIndicator;
+
+    var SubtitleSection = function SubtitleSection(_ref6) {
+      var children = _ref6.children,
+          className = _ref6.className,
+          otherProps = _objectWithoutProperties(_ref6, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-subtitle-section', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.SubtitleSection = SubtitleSection;
+
+    var Subtitle = function Subtitle(_ref7) {
+      var children = _ref7.children,
+          className = _ref7.className,
+          otherProps = _objectWithoutProperties(_ref7, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-subtitle', className)
+        }, otherProps), children)
+      );
+    };
+
+    exports.Subtitle = Subtitle;
+    var ICON_MAP = {
+      danger: 'exclamation-full',
+      info: 'info-circle',
+      success: 'check-circle-full',
+      warning: 'warning-full'
+    };
+
+    var HighLevel = function HighLevel(_ref8) {
+      var children = _ref8.children,
+          onClose = _ref8.onClose,
+          spritemap = _ref8.spritemap,
+          status = _ref8.status;
+      return (/*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(Title, null, status && /*#__PURE__*/_react.default.createElement(TitleIndicator, null, /*#__PURE__*/_react.default.createElement(_icon.default, {
+          spritemap: spritemap,
+          symbol: ICON_MAP[status]
+        })), children), /*#__PURE__*/_react.default.createElement(_button.default, {
+          "aria-label": "close",
+          className: "close",
+          displayType: "unstyled",
+          onClick: onClose
+        }, /*#__PURE__*/_react.default.createElement(_icon.default, {
+          spritemap: spritemap,
+          symbol: "times"
+        })))
+      );
+    };
+
+    var ClayModalHeader = function ClayModalHeader(_ref9) {
+      var children = _ref9.children,
+          className = _ref9.className,
+          otherProps = _objectWithoutProperties(_ref9, ["children", "className"]);
+
+      return (/*#__PURE__*/_react.default.createElement("div", _extends({
+          className: (0, _classnames.default)('modal-header', className)
+        }, otherProps), children)
+      );
+    };
+
+    var ClayModalHeaderHybrid = function ClayModalHeaderHybrid(_ref10) {
+      var children = _ref10.children,
+          _ref10$withTitle = _ref10.withTitle,
+          withTitle = _ref10$withTitle === void 0 ? true : _ref10$withTitle,
+          otherProps = _objectWithoutProperties(_ref10, ["children", "withTitle"]);
+
+      var _React$useContext = _react.default.useContext(_Context.default),
+          onClose = _React$useContext.onClose,
+          spritemap = _React$useContext.spritemap,
+          status = _React$useContext.status;
+
+      return (/*#__PURE__*/_react.default.createElement(ClayModalHeader, otherProps, withTitle && /*#__PURE__*/_react.default.createElement(HighLevel, {
+          onClose: onClose,
+          spritemap: spritemap,
+          status: status
+        }, children), !withTitle && children)
+      );
+    };
+
+    var _default = ClayModalHeaderHybrid;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Header.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Hook", ['module', 'exports', 'require', '@frontend-taglib-clay$clayui/shared', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.useUserInteractions = void 0;
+
+    var _shared = require("@frontend-taglib-clay$clayui/shared");
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var FOCUSABLE_ELEMENTS = ['a[href]', '[contenteditable]', '[tabindex]:not([tabindex^="-"])', 'area[href]', 'button:not([disabled]):not([aria-hidden])', 'embed', 'iframe', 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', 'object', 'select:not([disabled]):not([aria-hidden])', 'textarea:not([disabled]):not([aria-hidden])'];
+    /**
+     * A hook that takes care of controlling click, keyup and keydown events
+     * respectively close the modal after a click on the overlay, close the
+     * modal by pressing the ESC key and control the focus within the Modal.
+     */
+
+    var useUserInteractions = function useUserInteractions(modalElementRef, modalBodyElementRef, onClick) {
+      var mouseEventTargetRef = _react.default.useRef(null);
+
+      var getFocusableNodes = function getFocusableNodes() {
+        if (modalBodyElementRef.current) {
+          var nodes = modalBodyElementRef.current.querySelectorAll(FOCUSABLE_ELEMENTS);
+          return Object.keys(nodes).map(function (key) {
+            return nodes[key];
+          });
+        }
+
+        return [];
+      };
+
+      var handleKeydown = function handleKeydown(event) {
+        if (event.key === _shared.Keys.Tab) {
+          if (modalElementRef.current && event.target !== null && !modalElementRef.current.contains(event.target)) {
+            modalBodyElementRef.current.focus();
+          } else {
+            var focusableNodes = getFocusableNodes();
+            var focusedItemIndex = focusableNodes.indexOf(document.activeElement);
+
+            if (event.shiftKey && focusedItemIndex === 0) {
+              focusableNodes[focusableNodes.length - 1].focus();
+              event.preventDefault();
+            }
+
+            if (!event.shiftKey && focusedItemIndex === focusableNodes.length - 1) {
+              focusableNodes[0].focus();
+              event.preventDefault();
+            }
+          }
+        }
+      };
+
+      var handleKeyup = function handleKeyup(event) {
+        if (event.key === _shared.Keys.Esc) {
+          onClick();
+        }
+      };
+
+      var handleDocumentMouseDown = function handleDocumentMouseDown(event) {
+        // We keep the `event.target` to check later in the click event if
+        // the target is the same, otherwise, we are assuming that the element
+        // has been removed from the DOM.
+        mouseEventTargetRef.current = event.target;
+      };
+
+      var handleDocumentMouseUp = function handleDocumentMouseUp(event) {
+        if (event.defaultPrevented) {
+          mouseEventTargetRef.current = null;
+          return;
+        }
+
+        if (event.target === modalElementRef.current && (mouseEventTargetRef.current === event.target || mouseEventTargetRef.current === null)) {
+          onClick();
+        }
+
+        mouseEventTargetRef.current = null;
+      };
+      /**
+       * Just listen for keyup, keydown, and click when
+       * changeAttachEvent is true.
+       */
+
+      _react.default.useEffect(function () {
+        document.addEventListener('keydown', handleKeydown);
+        document.addEventListener('keyup', handleKeyup);
+        document.addEventListener('mousedown', handleDocumentMouseDown);
+        document.addEventListener('mouseup', handleDocumentMouseUp);
+        return function () {
+          document.removeEventListener('keydown', handleKeydown);
+          document.removeEventListener('keyup', handleKeyup);
+          document.removeEventListener('mousedown', handleDocumentMouseDown);
+          document.removeEventListener('mouseup', handleDocumentMouseUp);
+        };
+      }, []);
+    };
+
+    exports.useUserInteractions = useUserInteractions;
+  }
+});
+//# sourceMappingURL=Hook.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/types", ['module', 'exports', 'require'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.ObserverType = void 0;
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var ObserverType;
+    exports.ObserverType = ObserverType;
+
+    (function (ObserverType) {
+      ObserverType[ObserverType["Close"] = 0] = "Close";
+      ObserverType[ObserverType["Open"] = 1] = "Open";
+    })(ObserverType || (exports.ObserverType = ObserverType = {}));
+  }
+});
+//# sourceMappingURL=types.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Modal", ['module', 'exports', 'require', '@frontend-taglib-clay$clayui/shared', 'frontend-taglib-clay$classnames', 'frontend-js-react-web$react', 'frontend-taglib-clay$warning', './Body', './Context', './Footer', './Header', './Hook', './types'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _shared = require("@frontend-taglib-clay$clayui/shared");
+
+    var _classnames = _interopRequireDefault(require("frontend-taglib-clay$classnames"));
+
+    var _react = _interopRequireWildcard(require("frontend-js-react-web$react"));
+
+    var _warning = _interopRequireDefault(require("frontend-taglib-clay$warning"));
+
+    var _Body = _interopRequireDefault(require("./Body"));
+
+    var _Context = _interopRequireDefault(require("./Context"));
+
+    var _Footer = _interopRequireDefault(require("./Footer"));
+
+    var _Header = _interopRequireWildcard(require("./Header"));
+
+    var _Hook = require("./Hook");
+
+    var _types = require("./types");
+
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function") return null;var cache = new WeakMap();_getRequireWildcardCache = function _getRequireWildcardCache() {
+        return cache;
+      };return cache;
+    }
+
+    function _interopRequireWildcard(obj) {
+      if (obj && obj.__esModule) {
+        return obj;
+      }if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return { default: obj };
+      }var cache = _getRequireWildcardCache();if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }var newObj = {};var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
+          }
+        }
+      }newObj.default = obj;if (cache) {
+        cache.set(obj, newObj);
+      }return newObj;
+    }
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _extends() {
+      _extends = Object.assign || function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }return target;
+      };return _extends.apply(this, arguments);
+    }
+
+    function _defineProperty(obj, key, value) {
+      if (key in obj) {
+        Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+      } else {
+        obj[key] = value;
+      }return obj;
+    }
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    function _unsupportedIterableToArray(o, minLen) {
+      if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+    }
+
+    function _arrayLikeToArray(arr, len) {
+      if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {
+        arr2[i] = arr[i];
+      }return arr2;
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    function _objectWithoutProperties(source, excluded) {
+      if (source == null) return {};var target = _objectWithoutPropertiesLoose(source, excluded);var key, i;if (Object.getOwnPropertySymbols) {
+        var sourceSymbolKeys = Object.getOwnPropertySymbols(source);for (i = 0; i < sourceSymbolKeys.length; i++) {
+          key = sourceSymbolKeys[i];if (excluded.indexOf(key) >= 0) continue;if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;target[key] = source[key];
+        }
+      }return target;
+    }
+
+    function _objectWithoutPropertiesLoose(source, excluded) {
+      if (source == null) return {};var target = {};var sourceKeys = Object.keys(source);var key, i;for (i = 0; i < sourceKeys.length; i++) {
+        key = sourceKeys[i];if (excluded.indexOf(key) >= 0) continue;target[key] = source[key];
+      }return target;
+    }
+
+    var warningMessage = "You need to pass the 'observer' prop to ClayModal for everything to work fine, use the 'useModal' hook that exposes the observer.\n\n> const {observer} = useModal({...});\n>\n> return (\n> \t<ClayModal observer={observer}>\n> \t\t...\n> \t</ClayModal>\n> ); \n";
+
+    var ClayModal = function ClayModal(_ref) {
+      var _classNames;
+
+      var center = _ref.center,
+          children = _ref.children,
+          className = _ref.className,
+          observer = _ref.observer,
+          size = _ref.size,
+          spritemap = _ref.spritemap,
+          status = _ref.status,
+          zIndex = _ref.zIndex,
+          otherProps = _objectWithoutProperties(_ref, ["center", "children", "className", "observer", "size", "spritemap", "status", "zIndex"]);
+
+      var modalElementRef = (0, _react.useRef)(null);
+      var modalBodyElementRef = (0, _react.useRef)(null);
+      void 0;
+      (0, _Hook.useUserInteractions)(modalElementRef, modalBodyElementRef, function () {
+        return observer.dispatch(_types.ObserverType.Close);
+      });
+      (0, _react.useEffect)(function () {
+        return observer.dispatch(_types.ObserverType.Open);
+      }, []);
+
+      var _ref2 = observer && observer.mutation ? observer.mutation : [false, false],
+          _ref3 = _slicedToArray(_ref2, 2),
+          show = _ref3[0],
+          content = _ref3[1];
+
+      return (/*#__PURE__*/_react.default.createElement(_shared.ClayPortal, {
+          subPortalRef: modalElementRef
+        }, /*#__PURE__*/_react.default.createElement("div", {
+          className: (0, _classnames.default)('modal-backdrop fade', {
+            show: show
+          }),
+          style: {
+            zIndex: zIndex
+          }
+        }), /*#__PURE__*/_react.default.createElement("div", _extends({}, otherProps, {
+          className: (0, _classnames.default)('fade modal d-block', className, {
+            show: show
+          }),
+          ref: modalElementRef,
+          style: {
+            zIndex: zIndex && zIndex + 10
+          }
+        }), /*#__PURE__*/_react.default.createElement("div", {
+          className: (0, _classnames.default)('modal-dialog', (_classNames = {}, _defineProperty(_classNames, "modal-".concat(size), size), _defineProperty(_classNames, "modal-".concat(status), status), _defineProperty(_classNames, 'modal-dialog-centered', center), _classNames)),
+          ref: modalBodyElementRef,
+          tabIndex: -1
+        }, /*#__PURE__*/_react.default.createElement("div", {
+          className: "modal-content"
+        }, /*#__PURE__*/_react.default.createElement(_Context.default.Provider, {
+          value: {
+            onClose: function onClose() {
+              return observer.dispatch(_types.ObserverType.Close);
+            },
+            spritemap: spritemap,
+            status: status
+          }
+        }, content && children)))))
+      );
+    };
+
+    var _default = Object.assign(ClayModal, {
+      Body: _Body.default,
+      Footer: _Footer.default,
+      Header: _Header.default,
+      Item: _Header.Item,
+      ItemGroup: _Header.ItemGroup,
+      Subtitle: _Header.Subtitle,
+      SubtitleSection: _Header.SubtitleSection,
+      Title: _Header.Title,
+      TitleIndicator: _Header.TitleIndicator,
+      TitleSection: _Header.TitleSection
+    });
+
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Modal.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/useModal", ['module', 'exports', 'require', 'frontend-js-react-web$react', './types'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.useModal = void 0;
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    var _types = require("./types");
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    function _unsupportedIterableToArray(o, minLen) {
+      if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+    }
+
+    function _arrayLikeToArray(arr, len) {
+      if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {
+        arr2[i] = arr[i];
+      }return arr2;
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    var delay = function delay(fn) {
+      return setTimeout(function () {
+        fn();
+      }, 100);
+    };
+
+    var modalOpenClassName = 'modal-open';
+
+    var useModal = function useModal(_ref) {
+      var _ref$onClose = _ref.onClose,
+          onClose = _ref$onClose === void 0 ? function () {} : _ref$onClose;
+
+      var _React$useState = _react.default.useState([false, false]),
+          _React$useState2 = _slicedToArray(_React$useState, 2),
+          visible = _React$useState2[0],
+          setVisible = _React$useState2[1];
+
+      var timerIdRef = _react.default.useRef(null);
+      /**
+       * Control the close of the modal to create the component's "unmount"
+       * animation and call the onClose prop with delay.
+       */
+
+      var handleCloseModal = function handleCloseModal() {
+        document.body.classList.remove(modalOpenClassName);
+        setVisible([false, true]);
+        timerIdRef.current = delay(function () {
+          onClose();
+          setVisible([false, false]);
+        });
+      };
+
+      var handleOpenModal = function handleOpenModal() {
+        document.body.classList.add(modalOpenClassName);
+        timerIdRef.current = delay(function () {
+          return setVisible([true, true]);
+        });
+      };
+
+      _react.default.useEffect(function () {
+        return function () {
+          if (timerIdRef.current) {
+            clearTimeout(timerIdRef.current);
+          }
+        };
+      }, []);
+
+      return {
+        observer: {
+          dispatch: function handleObserverDispatch(type) {
+            switch (type) {
+              case _types.ObserverType.Close:
+                handleCloseModal();
+                break;
+
+              case _types.ObserverType.Open:
+                handleOpenModal();
+                break;
+
+              default:
+                break;
+            }
+          },
+          mutation: visible
+        },
+        onClose: handleCloseModal
+      };
+    };
+
+    exports.useModal = useModal;
+  }
+});
+//# sourceMappingURL=useModal.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/Provider", ['module', 'exports', 'require', 'frontend-js-react-web$react', './Modal', './useModal'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = exports.Context = void 0;
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    var _Modal = _interopRequireDefault(require("./Modal"));
+
+    var _useModal2 = require("./useModal");
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _objectWithoutProperties(source, excluded) {
+      if (source == null) return {};var target = _objectWithoutPropertiesLoose(source, excluded);var key, i;if (Object.getOwnPropertySymbols) {
+        var sourceSymbolKeys = Object.getOwnPropertySymbols(source);for (i = 0; i < sourceSymbolKeys.length; i++) {
+          key = sourceSymbolKeys[i];if (excluded.indexOf(key) >= 0) continue;if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;target[key] = source[key];
+        }
+      }return target;
+    }
+
+    function _objectWithoutPropertiesLoose(source, excluded) {
+      if (source == null) return {};var target = {};var sourceKeys = Object.keys(source);var key, i;for (i = 0; i < sourceKeys.length; i++) {
+        key = sourceKeys[i];if (excluded.indexOf(key) >= 0) continue;target[key] = source[key];
+      }return target;
+    }
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    function _unsupportedIterableToArray(o, minLen) {
+      if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+    }
+
+    function _arrayLikeToArray(arr, len) {
+      if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {
+        arr2[i] = arr[i];
+      }return arr2;
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    function ownKeys(object, enumerableOnly) {
+      var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });keys.push.apply(keys, symbols);
+      }return keys;
+    }
+
+    function _objectSpread(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {
+          ownKeys(Object(source), true).forEach(function (key) {
+            _defineProperty(target, key, source[key]);
+          });
+        } else if (Object.getOwnPropertyDescriptors) {
+          Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        } else {
+          ownKeys(Object(source)).forEach(function (key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+          });
+        }
+      }return target;
+    }
+
+    function _defineProperty(obj, key, value) {
+      if (key in obj) {
+        Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+      } else {
+        obj[key] = value;
+      }return obj;
+    }
+
+    var Action;
+
+    (function (Action) {
+      Action[Action["Close"] = 0] = "Close";
+      Action[Action["Open"] = 1] = "Open";
+    })(Action || (Action = {}));
+
+    var initialState = {
+      body: /*#__PURE__*/_react.default.createElement("div", null),
+      footer: [],
+      onClose: function onClose() {},
+      visible: false
+    };
+
+    var reducer = function reducer(state, action) {
+      switch (action.type) {
+        case Action.Open:
+          return _objectSpread(_objectSpread({}, action.payload), {}, {
+            visible: true
+          });
+
+        case Action.Close:
+          return initialState;
+
+        default:
+          throw new TypeError();
+      }
+    };
+
+    var Context = _react.default.createContext([initialState, function () {}]);
+
+    exports.Context = Context;
+
+    var ClayModalProvider = function ClayModalProvider(_ref) {
+      var children = _ref.children,
+          spritemap = _ref.spritemap;
+
+      var _React$useReducer = _react.default.useReducer(reducer, initialState),
+          _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
+          _React$useReducer2$ = _React$useReducer2[0],
+          visible = _React$useReducer2$.visible,
+          otherState = _objectWithoutProperties(_React$useReducer2$, ["visible"]),
+          dispatch = _React$useReducer2[1];
+
+      var _useModal = (0, _useModal2.useModal)({
+        onClose: function onClose() {
+          return dispatch({
+            type: Action.Close
+          });
+        }
+      }),
+          observer = _useModal.observer,
+          onClose = _useModal.onClose;
+
+      var body = otherState.body,
+          center = otherState.center,
+          footer = otherState.footer,
+          header = otherState.header,
+          size = otherState.size,
+          status = otherState.status,
+          url = otherState.url;
+
+      var _footer = _slicedToArray(footer, 3),
+          first = _footer[0],
+          middle = _footer[1],
+          last = _footer[2];
+
+      var state = _objectSpread(_objectSpread({}, otherState), {}, {
+        onClose: onClose
+      });
+
+      return (/*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, visible && /*#__PURE__*/_react.default.createElement(_Modal.default, {
+          center: center,
+          observer: observer,
+          size: size,
+          spritemap: spritemap,
+          status: status
+        }, /*#__PURE__*/_react.default.createElement(_Modal.default.Header, null, header), /*#__PURE__*/_react.default.createElement(_Modal.default.Body, {
+          url: url
+        }, body), /*#__PURE__*/_react.default.createElement(_Modal.default.Footer, {
+          first: first,
+          last: last,
+          middle: middle
+        })), /*#__PURE__*/_react.default.createElement(Context.Provider, {
+          value: [state, dispatch]
+        }, children))
+      );
+    };
+
+    var _default = ClayModalProvider;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=Provider.js.map
+"use strict";
+
+Liferay.Loader.define("@frontend-taglib-clay$clayui/modal@3.8.0/lib/index", ['module', 'exports', 'require', './Modal', './Provider', './useModal'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    Object.defineProperty(exports, "ClayModalProvider", {
+      enumerable: true,
+      get: function get() {
+        return _Provider.default;
+      }
+    });
+    Object.defineProperty(exports, "Context", {
+      enumerable: true,
+      get: function get() {
+        return _Provider.Context;
+      }
+    });
+    Object.defineProperty(exports, "useModal", {
+      enumerable: true,
+      get: function get() {
+        return _useModal.useModal;
+      }
+    });
+    exports.default = void 0;
+
+    var _Modal = _interopRequireDefault(require("./Modal"));
+
+    var _Provider = _interopRequireWildcard(require("./Provider"));
+
+    var _useModal = require("./useModal");
+
+    function _getRequireWildcardCache() {
+      if (typeof WeakMap !== "function") return null;var cache = new WeakMap();_getRequireWildcardCache = function _getRequireWildcardCache() {
+        return cache;
+      };return cache;
+    }
+
+    function _interopRequireWildcard(obj) {
+      if (obj && obj.__esModule) {
+        return obj;
+      }if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") {
+        return { default: obj };
+      }var cache = _getRequireWildcardCache();if (cache && cache.has(obj)) {
+        return cache.get(obj);
+      }var newObj = {};var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;if (desc && (desc.get || desc.set)) {
+            Object.defineProperty(newObj, key, desc);
+          } else {
+            newObj[key] = obj[key];
+          }
+        }
+      }newObj.default = obj;if (cache) {
+        cache.set(obj, newObj);
+      }return newObj;
+    }
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    /**
+     * SPDX-FileCopyrightText: © 2019 Liferay, Inc. <https://liferay.com>
+     * SPDX-License-Identifier: BSD-3-Clause
+     */
+    var _default = _Modal.default;
+    exports.default = _default;
+  }
+});
+//# sourceMappingURL=index.js.map
+Liferay.Loader.define('frontend-js-react-web$classnames@2.2.6/index', ['module', 'exports', 'require'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		/*!
+    Copyright (c) 2017 Jed Watson.
+    Licensed under the MIT License (MIT), see
+    http://jedwatson.github.io/classnames
+  */
+		/* global define */
+
+		(function () {
+			'use strict';
+
+			var hasOwn = {}.hasOwnProperty;
+
+			function classNames() {
+				var classes = [];
+
+				for (var i = 0; i < arguments.length; i++) {
+					var arg = arguments[i];
+					if (!arg) continue;
+
+					var argType = typeof arg;
+
+					if (argType === 'string' || argType === 'number') {
+						classes.push(arg);
+					} else if (Array.isArray(arg) && arg.length) {
+						var inner = classNames.apply(null, arg);
+						if (inner) {
+							classes.push(inner);
+						}
+					} else if (argType === 'object') {
+						for (var key in arg) {
+							if (hasOwn.call(arg, key) && arg[key]) {
+								classes.push(key);
+							}
+						}
+					}
+				}
+
+				return classes.join(' ');
+			}
+
+			if (typeof module !== 'undefined' && module.exports) {
+				classNames.default = classNames;
+				module.exports = classNames;
+			} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+				// register as 'classnames', consistent with npm package name
+				define('classnames', [], function () {
+					return classNames;
+				});
+			} else {
+				window.classNames = classNames;
+			}
+		})();
+	}
+});
+//# sourceMappingURL=index.js.map
+Liferay.Loader.define('frontend-js-node-shims$process@0.11.10/browser', ['module', 'exports', 'require'], function (module, exports, require) {
+    var define = undefined;
+    var global = window;
+    {
+        // shim for using process in browser
+        var process = module.exports = {};
+
+        // cached from whatever global is present so that test runners that stub it
+        // don't break things.  But we need to wrap it in a try catch in case it is
+        // wrapped in strict mode code which doesn't define any globals.  It's inside a
+        // function because try/catches deoptimize in certain engines.
+
+        var cachedSetTimeout;
+        var cachedClearTimeout;
+
+        function defaultSetTimout() {
+            throw new Error('setTimeout has not been defined');
+        }
+        function defaultClearTimeout() {
+            throw new Error('clearTimeout has not been defined');
+        }
+        (function () {
+            try {
+                if (typeof setTimeout === 'function') {
+                    cachedSetTimeout = setTimeout;
+                } else {
+                    cachedSetTimeout = defaultSetTimout;
+                }
+            } catch (e) {
+                cachedSetTimeout = defaultSetTimout;
+            }
+            try {
+                if (typeof clearTimeout === 'function') {
+                    cachedClearTimeout = clearTimeout;
+                } else {
+                    cachedClearTimeout = defaultClearTimeout;
+                }
+            } catch (e) {
+                cachedClearTimeout = defaultClearTimeout;
+            }
+        })();
+        function runTimeout(fun) {
+            if (cachedSetTimeout === setTimeout) {
+                //normal enviroments in sane situations
+                return setTimeout(fun, 0);
+            }
+            // if setTimeout wasn't available but was latter defined
+            if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+                cachedSetTimeout = setTimeout;
+                return setTimeout(fun, 0);
+            }
+            try {
+                // when when somebody has screwed with setTimeout but no I.E. maddness
+                return cachedSetTimeout(fun, 0);
+            } catch (e) {
+                try {
+                    // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+                    return cachedSetTimeout.call(null, fun, 0);
+                } catch (e) {
+                    // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+                    return cachedSetTimeout.call(this, fun, 0);
+                }
+            }
+        }
+        function runClearTimeout(marker) {
+            if (cachedClearTimeout === clearTimeout) {
+                //normal enviroments in sane situations
+                return clearTimeout(marker);
+            }
+            // if clearTimeout wasn't available but was latter defined
+            if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+                cachedClearTimeout = clearTimeout;
+                return clearTimeout(marker);
+            }
+            try {
+                // when when somebody has screwed with setTimeout but no I.E. maddness
+                return cachedClearTimeout(marker);
+            } catch (e) {
+                try {
+                    // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+                    return cachedClearTimeout.call(null, marker);
+                } catch (e) {
+                    // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+                    // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+                    return cachedClearTimeout.call(this, marker);
+                }
+            }
+        }
+        var queue = [];
+        var draining = false;
+        var currentQueue;
+        var queueIndex = -1;
+
+        function cleanUpNextTick() {
+            if (!draining || !currentQueue) {
+                return;
+            }
+            draining = false;
+            if (currentQueue.length) {
+                queue = currentQueue.concat(queue);
+            } else {
+                queueIndex = -1;
+            }
+            if (queue.length) {
+                drainQueue();
+            }
+        }
+
+        function drainQueue() {
+            if (draining) {
+                return;
+            }
+            var timeout = runTimeout(cleanUpNextTick);
+            draining = true;
+
+            var len = queue.length;
+            while (len) {
+                currentQueue = queue;
+                queue = [];
+                while (++queueIndex < len) {
+                    if (currentQueue) {
+                        currentQueue[queueIndex].run();
+                    }
+                }
+                queueIndex = -1;
+                len = queue.length;
+            }
+            currentQueue = null;
+            draining = false;
+            runClearTimeout(timeout);
+        }
+
+        process.nextTick = function (fun) {
+            var args = new Array(arguments.length - 1);
+            if (arguments.length > 1) {
+                for (var i = 1; i < arguments.length; i++) {
+                    args[i - 1] = arguments[i];
+                }
+            }
+            queue.push(new Item(fun, args));
+            if (queue.length === 1 && !draining) {
+                runTimeout(drainQueue);
+            }
+        };
+
+        // v8 likes predictible objects
+        function Item(fun, array) {
+            this.fun = fun;
+            this.array = array;
+        }
+        Item.prototype.run = function () {
+            this.fun.apply(null, this.array);
+        };
+        process.title = 'browser';
+        process.browser = true;
+        process.env = {};
+        process.argv = [];
+        process.version = ''; // empty string to avoid regexp issues
+        process.versions = {};
+
+        function noop() {}
+
+        process.on = noop;
+        process.addListener = noop;
+        process.once = noop;
+        process.off = noop;
+        process.removeListener = noop;
+        process.removeAllListeners = noop;
+        process.emit = noop;
+        process.prependListener = noop;
+        process.prependOnceListener = noop;
+
+        process.listeners = function (name) {
+            return [];
+        };
+
+        process.binding = function (name) {
+            throw new Error('process.binding is not supported');
+        };
+
+        process.cwd = function () {
+            return '/';
+        };
+        process.chdir = function (dir) {
+            throw new Error('process.chdir is not supported');
+        };
+        process.umask = function () {
+            return 0;
+        };
+    }
+});
+//# sourceMappingURL=browser.js.map
+Liferay.Loader.define('frontend-js-node-shims$process@0.11.10/index', ['module', 'exports', 'require', './browser'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    /* redirected by alias field(s) in  */
+    module.exports = require('./browser');
+  }
+});
+//# sourceMappingURL=index.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/render.es", ['module', 'exports', 'require', '@frontend-taglib-clay$clayui/icon', 'frontend-js-react-web$react', 'frontend-js-react-web$react-dom'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = render;
+
+    var _icon = require("@frontend-taglib-clay$clayui/icon");
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    var _reactDom = _interopRequireDefault(require("frontend-js-react-web$react-dom"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+    var counter = 0;
+    /**
+     * Wrapper for ReactDOM render that automatically:
+     *
+     * - Provides commonly-needed context (for example, the Clay spritemap).
+     * - Unmounts when portlets are destroyed based on the received
+     *   `portletId` value inside `renderData`. If none is passed, the
+     *   component will be automatically unmounted before the next navigation.
+     *
+     * @param {Function|React.Element} renderable Component, or function that returns an Element, to be rendered.
+     * @param {object} renderData Data to be passed to the component as props.
+     * @param {HTMLElement} container DOM node where the component is to be mounted.
+     *
+     * The React docs advise not to rely on the render return value, so we
+     * don't propagate it.
+     *
+     * @see https://reactjs.org/docs/react-dom.html#render
+     */
+
+    function render(renderable, renderData, container) {
+      if (!Liferay.SPA || Liferay.SPA.app) {
+        var portletId = renderData.portletId;
+        var spritemap = Liferay.ThemeDisplay.getPathThemeImages() + '/clay/icons.svg';
+        var componentId = renderData.componentId;
+
+
+        if (!componentId) {
+          componentId = "__UNNAMED_COMPONENT__".concat(portletId, "__").concat(counter++);
+        }
+
+        Liferay.component(componentId, {
+          destroy: function destroy() {
+            _reactDom["default"].unmountComponentAtNode(container);
+          }
+        }, {
+          destroyOnNavigate: !portletId,
+          portletId: portletId
+        });
+        var Component = typeof renderable === 'function' || renderable.$$typeof === Symbol["for"]('react.forward_ref') ? renderable : null; // eslint-disable-next-line @liferay/portal/no-react-dom-render
+
+        _reactDom["default"].render( /*#__PURE__*/_react["default"].createElement(_icon.ClayIconSpriteContext.Provider, {
+          value: spritemap
+        }, Component ? /*#__PURE__*/_react["default"].createElement(Component, renderData) : renderable), container);
+      } else {
+        Liferay.once('SPAReady', function () {
+          render(renderable, renderData, container);
+        });
+      }
+    }
+    //# sourceMappingURL=render.es.js.map
+  }
+});
+//# sourceMappingURL=render.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useEventListener.es", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useEventListener;
+
+    var _react = require("frontend-js-react-web$react");
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Hook for adding an event listener on mount and removing it on
+     * unmount.
+     *
+     * Note that in general you should be using React's built-in delegated
+     * event handling (ie. via `onclick`, `onfocus` etc attributes). This
+     * hook is for those rarer cases where you need to attach a listener
+     * outside of your component's DOM (eg. attaching a "scroll" or "resize"
+     * listener to the `window`).
+     */
+    function useEventListener(eventName, handler, phase, target) {
+      (0, _react.useEffect)(function () {
+        if (target) {
+          target.addEventListener(eventName, handler, phase);
+          return function () {
+            target.removeEventListener(eventName, handler, phase);
+          };
+        }
+      }, [eventName, handler, phase, target]);
+    }
+    //# sourceMappingURL=useEventListener.es.js.map
+  }
+});
+//# sourceMappingURL=useEventListener.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useIsMounted.es", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useIsMounted;
+
+    var _react = require("frontend-js-react-web$react");
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Hook for determining whether a component is still mounted.
+     *
+     * Use this to guard side-effects of asynchronous operations (fetches,
+     * promises) that may complete after a component has been unmounted.
+     *
+     * Example:
+     *
+     *      const isMounted = useIsMounted();
+     *      const [value, setHidden] = useHidden(true);
+     *
+     *      setTimeout(() => {
+     *          if (isMounted()) {
+     *              setHidden(true);
+     *          }
+     *      }, 1000);
+     *
+     */
+    function useIsMounted() {
+      var mountedRef = (0, _react.useRef)(false);
+      var isMounted = (0, _react.useCallback)(function () {
+        return mountedRef.current;
+      }, []);
+      (0, _react.useLayoutEffect)(function () {
+        mountedRef.current = true;
+        return function () {
+          mountedRef.current = false;
+        };
+      }, []);
+      return isMounted;
+    }
+    //# sourceMappingURL=useIsMounted.es.js.map
+  }
+});
+//# sourceMappingURL=useIsMounted.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useInterval.es", ['module', 'exports', 'require', 'frontend-js-react-web$react', './useIsMounted.es'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useInterval;
+
+    var _react = require("frontend-js-react-web$react");
+
+    var _useIsMounted = _interopRequireDefault(require("./useIsMounted.es"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Hook for scheduling a repeating function call with the specified
+     * interval (in milliseconds).
+     */
+    function useInterval() {
+      var isMounted = (0, _useIsMounted["default"])();
+      return (0, _react.useCallback)(function schedule(fn, ms) {
+        var handle = setInterval(function () {
+          if (isMounted()) {
+            fn();
+          } else {
+            clearInterval(handle);
+          }
+        }, ms);
+        return function () {
+          return clearInterval(handle);
+        };
+      }, [isMounted]);
+    }
+    //# sourceMappingURL=useInterval.es.js.map
+  }
+});
+//# sourceMappingURL=useInterval.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/usePrevious.es", ['module', 'exports', 'require', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = usePrevious;
+
+    var _react = require("frontend-js-react-web$react");
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Hook for comparing current and previous values (of state, props or any
+     * arbitrary value).
+     *
+     * @see https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
+     */
+    function usePrevious(value) {
+      var ref = (0, _react.useRef)();
+      (0, _react.useEffect)(function () {
+        ref.current = value;
+      });
+      return ref.current;
+    }
+    //# sourceMappingURL=usePrevious.es.js.map
+  }
+});
+//# sourceMappingURL=usePrevious.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useStateSafe.es", ['module', 'exports', 'require', 'frontend-js-react-web', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useStateSafe;
+
+    var _frontendJsReactWeb = require("frontend-js-react-web");
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+        return;
+      }var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    var useCallback = _react["default"].useCallback,
+        useState = _react["default"].useState;
+    /**
+     * Wrapper for `useState` that does an `isMounted()` check behind the scenes
+     * before triggering side-effects.
+     */
+
+    function useStateSafe(initialValue) {
+      var isMounted = (0, _frontendJsReactWeb.useIsMounted)();
+
+      var _useState = useState(initialValue),
+          _useState2 = _slicedToArray(_useState, 2),
+          state = _useState2[0],
+          setState = _useState2[1];
+
+      var setStateSafe = useCallback(function (newValue) {
+        if (isMounted()) {
+          setState(newValue);
+        }
+      }, [isMounted]);
+      return [state, setStateSafe];
+    }
+    //# sourceMappingURL=useStateSafe.es.js.map
+  }
+});
+//# sourceMappingURL=useStateSafe.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useThunk.es", ['module', 'exports', 'require', 'frontend-js-react-web', 'frontend-js-react-web$react'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useThunk;
+
+    var _frontendJsReactWeb = require("frontend-js-react-web");
+
+    var _react = _interopRequireDefault(require("frontend-js-react-web$react"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    function _slicedToArray(arr, i) {
+      return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    }
+
+    function _nonIterableRest() {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+
+    function _iterableToArrayLimit(arr, i) {
+      if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+        return;
+      }var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"] != null) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }
+
+    function _arrayWithHoles(arr) {
+      if (Array.isArray(arr)) return arr;
+    }
+
+    var useRef = _react["default"].useRef;
+    /**
+     * "Middleware" hook intended to wrap `useReducer` that enables you to dispatch
+     * thunks (ie. functions that dispatch actions) as well as plain actions (ie.
+     * objects).
+     */
+
+    function useThunk(_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          state = _ref2[0],
+          dispatch = _ref2[1];
+
+      var isMounted = (0, _frontendJsReactWeb.useIsMounted)(); // Use a ref to ensure our `dispatch` is stable across renders, just
+      // like the React-provided `dispatch` that we're wrapping.
+
+      var thunkDispatch = useRef(function (action) {
+        if (isMounted()) {
+          if (typeof action === 'function') {
+            return action(function (payload) {
+              if (isMounted()) {
+                dispatch(payload);
+              }
+            });
+          } else {
+            dispatch(action);
+          }
+        }
+      });
+      return [state, thunkDispatch.current];
+    }
+    //# sourceMappingURL=useThunk.es.js.map
+  }
+});
+//# sourceMappingURL=useThunk.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/hooks/useTimeout.es", ['module', 'exports', 'require', 'frontend-js-react-web$react', './useIsMounted.es'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports["default"] = useTimeout;
+
+    var _react = require("frontend-js-react-web$react");
+
+    var _useIsMounted = _interopRequireDefault(require("./useIsMounted.es"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Hook for delaying a function call by the specified interval (in
+     * milliseconds).
+     */
+    function useTimeout() {
+      var isMounted = (0, _useIsMounted["default"])();
+      return (0, _react.useCallback)(function delay(fn, ms) {
+        var handle = setTimeout(function () {
+          if (isMounted()) {
+            fn();
+          }
+        }, ms);
+        return function () {
+          return clearTimeout(handle);
+        };
+      }, [isMounted]);
+    }
+    //# sourceMappingURL=useTimeout.es.js.map
+  }
+});
+//# sourceMappingURL=useTimeout.es.js.map
+Liferay.Loader.define("frontend-js-react-web@4.0.18/js/index.es", ['module', 'exports', 'require', 'frontend-js-node-shims$process', './render.es', './hooks/useEventListener.es', './hooks/useInterval.es', './hooks/useIsMounted.es', './hooks/usePrevious.es', './hooks/useStateSafe.es', './hooks/useThunk.es', './hooks/useTimeout.es'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    Object.defineProperty(exports, "render", {
+      enumerable: true,
+      get: function get() {
+        return _render["default"];
+      }
+    });
+    Object.defineProperty(exports, "useEventListener", {
+      enumerable: true,
+      get: function get() {
+        return _useEventListener["default"];
+      }
+    });
+    Object.defineProperty(exports, "useInterval", {
+      enumerable: true,
+      get: function get() {
+        return _useInterval["default"];
+      }
+    });
+    Object.defineProperty(exports, "useIsMounted", {
+      enumerable: true,
+      get: function get() {
+        return _useIsMounted["default"];
+      }
+    });
+    Object.defineProperty(exports, "usePrevious", {
+      enumerable: true,
+      get: function get() {
+        return _usePrevious["default"];
+      }
+    });
+    Object.defineProperty(exports, "useStateSafe", {
+      enumerable: true,
+      get: function get() {
+        return _useStateSafe["default"];
+      }
+    });
+    Object.defineProperty(exports, "useThunk", {
+      enumerable: true,
+      get: function get() {
+        return _useThunk["default"];
+      }
+    });
+    Object.defineProperty(exports, "useTimeout", {
+      enumerable: true,
+      get: function get() {
+        return _useTimeout["default"];
+      }
+    });
+
+    var _process = _interopRequireDefault(require("frontend-js-node-shims$process"));
+
+    var _render = _interopRequireDefault(require("./render.es"));
+
+    var _useEventListener = _interopRequireDefault(require("./hooks/useEventListener.es"));
+
+    var _useInterval = _interopRequireDefault(require("./hooks/useInterval.es"));
+
+    var _useIsMounted = _interopRequireDefault(require("./hooks/useIsMounted.es"));
+
+    var _usePrevious = _interopRequireDefault(require("./hooks/usePrevious.es"));
+
+    var _useStateSafe = _interopRequireDefault(require("./hooks/useStateSafe.es"));
+
+    var _useThunk = _interopRequireDefault(require("./hooks/useThunk.es"));
+
+    var _useTimeout = _interopRequireDefault(require("./hooks/useTimeout.es"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { "default": obj };
+    }
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+    // Egregious hack because react-dnd expects `window.process` to exist:
+    //
+    // https://github.com/react-dnd/asap/blob/b6bebeb734/src/node/asap.ts#L24
+    if (!window.process) {
+      window.process = _process["default"];
+    }
+    //# sourceMappingURL=index.es.js.map
+  }
+});
+//# sourceMappingURL=index.es.js.map
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+'use strict';
+
+Liferay.Loader.define('frontend-js-react-web$prop-types@15.7.2/lib/ReactPropTypesSecret', ['module', 'exports', 'require'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
+    module.exports = ReactPropTypesSecret;
+  }
+});
+//# sourceMappingURL=ReactPropTypesSecret.js.map

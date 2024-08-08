@@ -1,0 +1,87 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+AUI.add('liferay-search-bar', function (A) {
+  var SearchBar = function SearchBar(form) {
+    if (!form) {
+      return;
+    }
+
+    var instance = this;
+    instance.form = form;
+    instance.form.on('submit', A.bind(instance._onSubmit, instance));
+    var emptySearchInput = instance.form.one('.search-bar-empty-search-input');
+    instance.emptySearchEnabled = emptySearchInput && emptySearchInput.val() === 'true';
+    instance.keywordsInput = instance.form.one('.search-bar-keywords-input');
+    instance.resetStartPage = instance.form.one('.search-bar-reset-start-page');
+    instance.scopeSelect = instance.form.one('.search-bar-scope-select');
+  };
+
+  A.mix(SearchBar.prototype, {
+    _onSubmit: function _onSubmit(event) {
+      var instance = this;
+      event.stopPropagation();
+      instance.search();
+    },
+    getKeywords: function getKeywords() {
+      var instance = this;
+
+      if (!instance.keywordsInput) {
+        return '';
+      }
+
+      var keywords = instance.keywordsInput.val();
+      return keywords.replace(/^\s+|\s+$/, '');
+    },
+    isSubmitEnabled: function isSubmitEnabled() {
+      var instance = this;
+      return instance.getKeywords() !== '' || instance.emptySearchEnabled;
+    },
+    search: function search() {
+      var instance = this;
+
+      if (instance.isSubmitEnabled()) {
+        var searchURL = instance.form.get('action');
+        var queryString = instance.updateQueryString(document.location.search);
+        document.location.href = searchURL + queryString;
+      }
+    },
+    updateQueryString: function updateQueryString(queryString) {
+      var instance = this;
+      var searchParams = new URLSearchParams(queryString);
+
+      if (instance.keywordsInput) {
+        searchParams.set(instance.keywordsInput.get('name'), instance.getKeywords());
+      }
+
+      if (instance.resetStartPage) {
+        searchParams.delete(instance.resetStartPage.get('name'));
+      }
+
+      if (instance.scopeSelect) {
+        searchParams.set(instance.scopeSelect.get('name'), instance.scopeSelect.val());
+      }
+
+      searchParams.delete('p_p_id');
+      searchParams.delete('p_p_state');
+      searchParams.delete('start');
+      return '?' + searchParams.toString();
+    }
+  });
+  Liferay.namespace('Search').SearchBar = SearchBar;
+}, '');
+//# sourceMappingURL=search_bar.js.map
+YUI.add("querystring-stringify",function(e,t){var n=e.namespace("QueryString"),r=[],i=e.Lang;n.escape=encodeURIComponent,n.stringify=function(e,t,s){var o,u,a,f,l,c,h=t&&t.sep?t.sep:"&",p=t&&t.eq?t.eq:"=",d=t&&t.arrayKey?t.arrayKey:!1;if(i.isNull(e)||i.isUndefined(e)||i.isFunction(e))return s?n.escape(s)+p:"";if(i.isBoolean(e)||Object.prototype.toString.call(e)==="[object Boolean]")e=+e;if(i.isNumber(e)||i.isString(e))return n.escape(s)+p+n.escape(e);if(i.isArray(e)){c=[],s=d?s+"[]":s,f=e.length;for(a=0;a<f;a++)c.push(n.stringify(e[a],t,s));return c.join(h)}for(a=r.length-1;a>=0;--a)if(r[a]===e)throw new Error("QueryString.stringify. Cyclical reference");r.push(e),c=[],o=s?s+"[":"",u=s?"]":"";for(a in e)e.hasOwnProperty(a)&&(l=o+a+u,c.push(n.stringify(e[a],t,l)));return r.pop(),c=c.join(h),!c&&s?s+"=":c}},"patched-v3.18.1",{requires:["yui-base"]});
+
+YUI.add("aui-io-request",function(e,t){var n=e.Lang,r=n.isBoolean,i=n.isFunction,s=n.isString,o=e.namespace("config.io"),u=function(e){return function(){return o[e]}},a={all:"*/*",html:"text/html",json:"application/json, text/javascript",text:"text/plain",xml:"application/xml, text/xml"},f=e.Component.create({NAME:"IORequest",ATTRS:{autoLoad:{value:!0,validator:r},cache:{value:!0,validator:r},dataType:{setter:function(e){return(e||"").toLowerCase()},value:null,validator:s},responseData:{setter:function(e){return this._setResponseData(e)},value:null},uri:{setter:function(e){return this._parseURL(e)},value:null,validator:s},active:{value:!1,validator:r},cfg:{getter:function(){var t=this;return{arguments:t.get("arguments"),context:t.get("context"),data:t.getFormattedData(),form:t.get("form"),headers:t.get("headers"),method:t.get("method"),on:{complete:e.bind(t.fire,t,"complete"),end:e.bind(t._end,t),failure:e.bind(t.fire,t,"failure"),start:e.bind(t.fire,t,"start"),success:e.bind(t._success,t)},sync:t.get("sync"),timeout:t.get("timeout"),xdr:t.get("xdr")}},readOnly:!0},transaction:{value:null},arguments:{valueFn:u("arguments")},context:{valueFn:u("context")},data:{valueFn:u("data")},form:{valueFn:u("form")},headers:{getter:function(t){var n=[],r=this,i=r.get("dataType");return i&&n.push(a[i]),n.push(a.all),e.merge(t,{Accept:n.join(", ")})},valueFn:u("headers")},method:{setter:function(e){return e.toLowerCase()},valueFn:u("method")},selector:{value:null},sync:{valueFn:u("sync")},timeout:{valueFn:u("timeout")},xdr:{valueFn:u("xdr")}},EXTENDS:e.Plugin.Base,prototype:{init:function(){var e=this;f.superclass.init.apply(this,arguments),e._autoStart()},destructor:function(){var e=this;e.stop(),e.set("transaction",null)},getFormattedData:function(){var e=this,t=e.get("data"),n=o.dataFormatter;return i(n)&&(t=n.call(e,t)),t},start:function(){var t=this;t.destructor(),t.set("active",!0);var n=t._yuiIOObj;n||(n=new e.IO,t._yuiIOObj=n);var r=n.send(t.get("uri"),t.get("cfg"));t.set("transaction",r)},stop:function(){var e=this,t=e.get("transaction");t&&t.abort()},_autoStart:function(){var e=this;e.get("autoLoad")&&e.start()},_parseURL:function(e){var t=this,n=t.get("cache"),r=t.get("method");if(n===!1&&r==="get"){var s=+(new Date),u=e.replace(/(\?|&)_=.*?(&|$)/,"$1_="+s+"$2");e=u+(u===e?(e.match(/\?/)?"&":"?")+"_="+s:"")}var a=o.uriFormatter;return i(a)&&(e=a.apply(t,[e])),e},_end:function(e,t){var n=this;n.set("active",!1),n.set("transaction",null),n.fire("end",e,t)},_success:function(e,t,n){var r=this;r.set("responseData",t),r.fire("success",e,t,n)},_setResponseData:function(t){var n=null,r=this;if(t){var i=r.get("dataType"),s=t.getResponseHeader("content-type")||"";if(i==="xml"||!i&&s.indexOf("xml")>=0){n=t.responseXML;if(n.documentElement.tagName==="parsererror")throw"Parser error: IO dataType is not correctly parsing"}else n=t.responseText;n===""&&(n=null);if(i==="json")try{n=e.JSON.parse(n)}catch(o){}else{var u=r.get("selector");if(n&&u){var a;n.documentElement?a=e.one(n):a=e.Node.create(n),n=a.all(u)}}}return n}}});e.IORequest=f,e.io.request=function(t,n){return new e.IORequest(e.merge(n,{uri:t}))}},"3.1.0-deprecated.78",{requires:["io-base","json","plugin","querystring-stringify","aui-component"]});
+

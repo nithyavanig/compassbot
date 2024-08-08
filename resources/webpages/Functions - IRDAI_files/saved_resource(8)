@@ -1,0 +1,4630 @@
+'use strict';
+
+Liferay.Loader.define('frontend-js-metal-web$metal-component@2.16.8/lib/sync/sync', ['module', 'exports', 'require', 'frontend-js-metal-web$metal'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+		exports.syncState = syncState;
+
+		var _metal = require('frontend-js-metal-web$metal');
+
+		var SYNC_FNS_KEY = '__METAL_SYNC_FNS__';
+
+		/**
+   * Gets the `sync` methods for this component's state. Caches the results in
+   * the component's constructor whenever possible, so that this doesn't need to
+   * be calculated again. It's not possible to cache the results when at least
+   * one sync method is defined in the instance itself instead of in its
+   * prototype, as it may be bound to the instance (not reusable by others).
+   * @param {!Component} component
+   * @return {!Object}
+   * @private
+   */
+		function getSyncFns_(component) {
+			var ctor = component.constructor;
+			if (ctor.hasOwnProperty(SYNC_FNS_KEY)) {
+				return ctor[SYNC_FNS_KEY];
+			}
+
+			var fns = {};
+			var keys = component.getDataManager().getSyncKeys(component);
+			var canCache = true;
+			for (var i = 0; i < keys.length; i++) {
+				var name = 'sync' + keys[i].charAt(0).toUpperCase() + keys[i].slice(1);
+				var fn = component[name];
+				if (fn) {
+					fns[keys[i]] = fn;
+					canCache = canCache && component.constructor.prototype[name];
+				}
+			}
+
+			if (canCache) {
+				ctor[SYNC_FNS_KEY] = fns;
+			}
+			return fns;
+		}
+
+		/**
+   * Calls "sync" functions for the given component's state.
+   * @param {!Component} component
+   * @param {Object=} changes When given, only the properties inside it will
+   *     be synced. Otherwise all state properties will be synced.
+   */
+		function syncState(component, changes) {
+			var syncFns = getSyncFns_(component);
+			var keys = Object.keys(changes || syncFns);
+			for (var i = 0; i < keys.length; i++) {
+				var fn = syncFns[keys[i]];
+				if ((0, _metal.isFunction)(fn)) {
+					var change = changes && changes[keys[i]];
+					var manager = component.getDataManager();
+					fn.call(component, change ? change.newVal : manager.get(component, keys[i]), change ? change.prevVal : undefined);
+				}
+			}
+		}
+		//# sourceMappingURL=sync.js.map
+	}
+});
+//# sourceMappingURL=sync.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/domData", ['module', 'exports', 'require', 'frontend-js-metal-web$metal'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		var METAL_DATA = '__metal_data__';
+
+		/**
+   * Set of utilities for dom data operations
+   */
+
+		var domData = function () {
+			function domData() {
+				_classCallCheck(this, domData);
+			}
+
+			_createClass(domData, null, [{
+				key: 'get',
+
+				/**
+     * Gets Metal.js's data for the given element.
+     * @param {!Element} element
+     * @param {string=} name Optional property from the data to be returned.
+     * @param {*=} initialValue Optional value to the set the requested property
+     *     to if it doesn't exist yet in the data.
+     * @return {!Object}
+     */
+				value: function get(element, name, initialValue) {
+					if (!element[METAL_DATA]) {
+						element[METAL_DATA] = {};
+					}
+					if (!name) {
+						return element[METAL_DATA];
+					}
+					if (!(0, _metal.isDef)(element[METAL_DATA][name]) && (0, _metal.isDef)(initialValue)) {
+						element[METAL_DATA][name] = initialValue;
+					}
+					return element[METAL_DATA][name];
+				}
+
+				/**
+     * Checks if the given element has data stored in it.
+     * @param {!Element} element
+     * @return {boolean}
+     */
+
+			}, {
+				key: 'has',
+				value: function has(element) {
+					return !!element[METAL_DATA];
+				}
+
+				/**
+     * Sets Metal.js's data for the given element.
+     * @param {!Element} element
+     * @param {string=} name Property from the data to be set.
+     * @param {*=} value Value to be set on the element.
+     * @return {!Object|*}
+     */
+
+			}, {
+				key: 'set',
+				value: function set(element, name, value) {
+					if (!element[METAL_DATA]) {
+						element[METAL_DATA] = {};
+					}
+					if (!name || !(0, _metal.isDef)(value)) {
+						return element[METAL_DATA];
+					}
+					element[METAL_DATA][name] = value;
+					return element[METAL_DATA][name];
+				}
+			}]);
+
+			return domData;
+		}();
+
+		exports.default = domData;
+		//# sourceMappingURL=domData.js.map
+	}
+});
+//# sourceMappingURL=domData.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/DomDelegatedEventHandle", ['module', 'exports', 'require', 'frontend-js-metal-web$metal', './domData', 'frontend-js-metal-web$metal-events'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		var _domData = require('./domData');
+
+		var _domData2 = _interopRequireDefault(_domData);
+
+		var _metalEvents = require("frontend-js-metal-web$metal-events");
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		function _possibleConstructorReturn(self, call) {
+			if (!self) {
+				throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+			}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+		}
+
+		function _inherits(subClass, superClass) {
+			if (typeof superClass !== "function" && superClass !== null) {
+				throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+			}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+		}
+
+		/**
+   * This is a special EventHandle, that is responsible for dom delegated events
+   * (only the ones that receive a target element, not a selector string).
+   * @extends {EventHandle}
+   */
+		var DomDelegatedEventHandle = function (_EventHandle) {
+			_inherits(DomDelegatedEventHandle, _EventHandle);
+
+			/**
+    * The constructor for `DomDelegatedEventHandle`.
+    * @param {!Event} emitter Element the event was subscribed to.
+    * @param {string} event The name of the event that was subscribed to.
+    * @param {!Function} listener The listener subscribed to the event.
+    * @param {string=} selector An optional selector used when delegating
+    *     the event.
+    * @constructor
+    */
+			function DomDelegatedEventHandle(emitter, event, listener, selector) {
+				_classCallCheck(this, DomDelegatedEventHandle);
+
+				var _this = _possibleConstructorReturn(this, (DomDelegatedEventHandle.__proto__ || Object.getPrototypeOf(DomDelegatedEventHandle)).call(this, emitter, event, listener));
+
+				_this.selector_ = selector;
+				return _this;
+			}
+
+			/**
+    * @inheritDoc
+    */
+
+			_createClass(DomDelegatedEventHandle, [{
+				key: 'removeListener',
+				value: function removeListener() {
+					var delegating = _domData2.default.get(this.emitter_, 'delegating', {});
+					var listeners = _domData2.default.get(this.emitter_, 'listeners', {});
+					var selector = this.selector_;
+					var arr = (0, _metal.isString)(selector) ? delegating[this.event_].selectors : listeners;
+					var key = (0, _metal.isString)(selector) ? selector : this.event_;
+
+					_metal.array.remove(arr[key] || [], this.listener_);
+					if (arr[key] && arr[key].length === 0) {
+						delete arr[key];
+					}
+				}
+			}]);
+
+			return DomDelegatedEventHandle;
+		}(_metalEvents.EventHandle);
+
+		exports.default = DomDelegatedEventHandle;
+		//# sourceMappingURL=DomDelegatedEventHandle.js.map
+	}
+});
+//# sourceMappingURL=DomDelegatedEventHandle.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/DomEventHandle", ['module', 'exports', 'require', 'frontend-js-metal-web$metal-events'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metalEvents = require("frontend-js-metal-web$metal-events");
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		function _possibleConstructorReturn(self, call) {
+			if (!self) {
+				throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+			}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+		}
+
+		function _inherits(subClass, superClass) {
+			if (typeof superClass !== "function" && superClass !== null) {
+				throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+			}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+		}
+
+		/**
+   * This is a special EventHandle, that is responsible for dom events, instead
+   * of EventEmitter events.
+   * @extends {EventHandle}
+   */
+		var DomEventHandle = function (_EventHandle) {
+			_inherits(DomEventHandle, _EventHandle);
+
+			/**
+    * The constructor for `DomEventHandle`.
+    * @param {!EventEmitter} emitter Emitter the event was subscribed to.
+    * @param {string} event The name of the event that was subscribed to.
+    * @param {!Function} listener The listener subscribed to the event.
+    * @param {boolean} capture Flag indicating if listener should be triggered
+    *   during capture phase, instead of during the bubbling phase. Defaults to false.
+    * @constructor
+    */
+			function DomEventHandle(emitter, event, listener, capture) {
+				_classCallCheck(this, DomEventHandle);
+
+				var _this = _possibleConstructorReturn(this, (DomEventHandle.__proto__ || Object.getPrototypeOf(DomEventHandle)).call(this, emitter, event, listener));
+
+				_this.capture_ = capture;
+				return _this;
+			}
+
+			/**
+    * @inheritDoc
+    */
+
+			_createClass(DomEventHandle, [{
+				key: 'removeListener',
+				value: function removeListener() {
+					this.emitter_.removeEventListener(this.event_, this.listener_, this.capture_);
+				}
+			}]);
+
+			return DomEventHandle;
+		}(_metalEvents.EventHandle);
+
+		exports.default = DomEventHandle;
+		//# sourceMappingURL=DomEventHandle.js.map
+	}
+});
+//# sourceMappingURL=DomEventHandle.js.map
+'use strict';
+
+Liferay.Loader.define('frontend-js-metal-web$metal-dom@2.16.8/lib/domNamed', ['module', 'exports', 'require', 'frontend-js-metal-web$metal', './domData', './DomDelegatedEventHandle', './DomEventHandle'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+		exports.customEvents = undefined;
+		exports.addClasses = addClasses;
+		exports.closest = closest;
+		exports.append = append;
+		exports.buildFragment = buildFragment;
+		exports.contains = contains;
+		exports.delegate = delegate;
+		exports.isNodeListLike = isNodeListLike;
+		exports.enterDocument = enterDocument;
+		exports.exitDocument = exitDocument;
+		exports.hasClass = hasClass;
+		exports.isEmpty = isEmpty;
+		exports.match = match;
+		exports.next = next;
+		exports.on = on;
+		exports.once = once;
+		exports.parent = parent;
+		exports.prepend = prepend;
+		exports.registerCustomEvent = registerCustomEvent;
+		exports.removeChildren = removeChildren;
+		exports.removeClasses = removeClasses;
+		exports.replace = replace;
+		exports.supportsEvent = supportsEvent;
+		exports.toElement = toElement;
+		exports.toggleClasses = toggleClasses;
+		exports.triggerEvent = triggerEvent;
+
+		var _metal = require('frontend-js-metal-web$metal');
+
+		var _domData = require('./domData');
+
+		var _domData2 = _interopRequireDefault(_domData);
+
+		var _DomDelegatedEventHandle = require('./DomDelegatedEventHandle');
+
+		var _DomDelegatedEventHandle2 = _interopRequireDefault(_DomDelegatedEventHandle);
+
+		var _DomEventHandle = require('./DomEventHandle');
+
+		var _DomEventHandle2 = _interopRequireDefault(_DomEventHandle);
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		var elementsByTag_ = {};
+		var supportCache_ = {};
+		var customEvents = exports.customEvents = {};
+
+		var LAST_CONTAINER = '__metal_last_container__';
+		var USE_CAPTURE = {
+			blur: true,
+			error: true,
+			focus: true,
+			invalid: true,
+			load: true,
+			scroll: true
+		};
+
+		/**
+   * Adds the requested CSS classes to an element.
+   * @param {!Element|!Nodelist} elements The element or elements to add CSS classes to.
+   * @param {string} classes CSS classes to add.
+   */
+		function addClasses(elements, classes) {
+			if (!(0, _metal.isObject)(elements) || !(0, _metal.isString)(classes)) {
+				return;
+			}
+
+			if (!elements.length) {
+				elements = [elements];
+			}
+
+			for (var i = 0; i < elements.length; i++) {
+				if ('classList' in elements[i]) {
+					addClassesWithNative_(elements[i], classes);
+				} else {
+					addClassesWithoutNative_(elements[i], classes);
+				}
+			}
+		}
+
+		/**
+   * Adds the requested CSS classes to an element using classList.
+   * @param {!Element} element The element to add CSS classes to.
+   * @param {string} classes CSS classes to add.
+   * @private
+   */
+		function addClassesWithNative_(element, classes) {
+			classes.split(' ').forEach(function (className) {
+				if (className) {
+					element.classList.add(className);
+				}
+			});
+		}
+
+		/**
+   * IE11 doesn't support Element.classList.add function, this method
+   * adds the requested CSS classes to an element without using classList.
+   * @param {!Element} element The element to add CSS classes to.
+   * @param {string} classes CSS classes to add.
+   * @private
+   */
+		function addClassesWithoutNative_(element, classes) {
+			var elementClassName = ' ' + element.className + ' ';
+			var classesToAppend = '';
+
+			classes = classes.split(' ');
+
+			for (var i = 0; i < classes.length; i++) {
+				var className = classes[i];
+
+				if (elementClassName.indexOf(' ' + className + ' ') === -1) {
+					classesToAppend += ' ' + className;
+				}
+			}
+
+			if (classesToAppend) {
+				element.className = element.className + classesToAppend;
+			}
+		}
+
+		/**
+   * Adds an event listener to the given element, to be triggered via delegate.
+   * @param {!Element} element
+   * @param {string} eventName
+   * @param {!function()} listener
+   * @private
+   */
+		function addElementListener_(element, eventName, listener) {
+			addToArr_(_domData2.default.get(element, 'listeners', {}), eventName, listener);
+		}
+
+		/**
+   * Adds an event listener to the given element, to be triggered via delegate
+   * selectors.
+   * @param {!Element} element
+   * @param {string} eventName
+   * @param {string} selector
+   * @param {!function()} listener
+   * @private
+   */
+		function addSelectorListener_(element, eventName, selector, listener) {
+			var delegatingData = _domData2.default.get(element, 'delegating', {});
+			addToArr_(delegatingData[eventName].selectors, selector, listener);
+		}
+
+		/**
+   * Adds a value to an array inside an object, creating it first if it doesn't
+   * yet exist.
+   * @param {!Array} arr
+   * @param {string} key
+   * @param {*} value
+   * @private
+   */
+		function addToArr_(arr, key, value) {
+			if (!arr[key]) {
+				arr[key] = [];
+			}
+			arr[key].push(value);
+		}
+
+		/**
+   * Attaches a delegate listener, unless there's already one attached.
+   * @param {!Element} element
+   * @param {string} eventName
+   * @private
+   */
+		function attachDelegateEvent_(element, eventName) {
+			var delegatingData = _domData2.default.get(element, 'delegating', {});
+			if (!delegatingData[eventName]) {
+				delegatingData[eventName] = {
+					handle: on(element, eventName, handleDelegateEvent_, !!USE_CAPTURE[eventName]),
+					selectors: {}
+				};
+			}
+		}
+
+		/**
+   * IE11 doesn't support Element.closest function, this method
+   * gets the closest element up the tree from the given element (including
+   * itself) that matches the specified selector, or null if none match.
+   * @param {Element} element
+   * @param {string} selector
+   * @return {Element}
+   */
+		function closest(element, selector) {
+			while (element && !match(element, selector)) {
+				element = element.parentNode;
+			}
+			return element;
+		}
+
+		/**
+   * IE11 doesn't support Element.classList.add function, this method
+   * appends a child node with text or other nodes to a parent node. If
+   * child is a HTML string it will be automatically converted to a document
+   * fragment before appending it to the parent.
+   * @param {!Element} parent The node to append nodes to.
+   * @param {!(Element|NodeList|string)} child The thing to append to the parent.
+   * @return {!Element} The appended child.
+   */
+		function append(parent, child) {
+			if ((0, _metal.isString)(child)) {
+				child = buildFragment(child);
+			}
+			if (isNodeListLike(child)) {
+				var childArr = Array.prototype.slice.call(child);
+				for (var i = 0; i < childArr.length; i++) {
+					parent.appendChild(childArr[i]);
+				}
+			} else {
+				parent.appendChild(child);
+			}
+			return child;
+		}
+
+		/**
+   * Helper for converting a HTML string into a document fragment.
+   * @param {string} htmlString The HTML string to convert.
+   * @return {!Element} The resulting document fragment.
+   */
+		function buildFragment(htmlString) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = '<br>' + htmlString;
+			tempDiv.removeChild(tempDiv.firstChild);
+
+			var fragment = document.createDocumentFragment();
+			while (tempDiv.firstChild) {
+				fragment.appendChild(tempDiv.firstChild);
+			}
+			return fragment;
+		}
+
+		/**
+   * Checks if the first element contains the second one.
+   * @deprecated Use element1.contains(element2) directly instead of this method
+   * @param {!Element} element1
+   * @param {!Element} element2
+   * @return {boolean}
+   */
+		function contains(element1, element2) {
+			if ((0, _metal.isDocument)(element1)) {
+				// document.contains is not defined on IE9, so call it on documentElement instead.
+				return element1.documentElement.contains(element2);
+			} else {
+				return element1.contains(element2);
+			}
+		}
+
+		/**
+   * Listens to the specified event on the given DOM element, but only calls the
+   * given callback listener when it's triggered by elements that match the
+   * given selector or target element.
+   * @param {!Element} element The DOM element the event should be listened on.
+   * @param {string} eventName The name of the event to listen to.
+   * @param {!Element|string} selectorOrTarget Either an element or css selector
+   *     that should match the event for the listener to be triggered.
+   * @param {!function(!Object)} callback Function to be called when the event
+   *     is triggered. It will receive the normalized event object.
+   * @param {boolean=} defaultListener Optional flag indicating if this is a default
+   *     listener. That means that it would only be executed after all non
+   *     default listeners, and only if the event isn't prevented via
+   *     `preventDefault`.
+   * @return {!EventHandle} Can be used to remove the listener.
+   */
+		function delegate(element, eventName, selectorOrTarget, callback, defaultListener) {
+			var customConfig = customEvents[eventName];
+			if (customConfig && customConfig.delegate) {
+				eventName = customConfig.originalEvent;
+				callback = customConfig.handler.bind(customConfig, callback);
+			}
+
+			if (defaultListener) {
+				// Wrap callback so we don't set property directly on it.
+				callback = callback.bind();
+				callback.defaultListener_ = true;
+			}
+
+			attachDelegateEvent_(element, eventName);
+			if ((0, _metal.isString)(selectorOrTarget)) {
+				addSelectorListener_(element, eventName, selectorOrTarget, callback);
+			} else {
+				addElementListener_(selectorOrTarget, eventName, callback);
+			}
+
+			return new _DomDelegatedEventHandle2.default((0, _metal.isString)(selectorOrTarget) ? element : selectorOrTarget, eventName, callback, (0, _metal.isString)(selectorOrTarget) ? selectorOrTarget : null);
+		}
+
+		/**
+   * Verifies if the element is able to trigger the Click event,
+   * simulating browsers behaviour, avoiding event listeners to be called by triggerEvent method.
+   * @param {Element} node Element to be checked.
+   * @param {string} eventName The event name.
+   * @param {Object=} eventObj
+   * @private
+   * @return {boolean}
+   */
+		function isAbleToInteractWith_(node, eventName, eventObj) {
+			if (eventObj && eventName === 'click' && eventObj.button === 2) {
+				// Firefox triggers "click" events on the document for right clicks. This
+				// causes our delegate logic to trigger it for regular elements too, which
+				// shouldn't happen. Ignoring them here.
+				return false;
+			}
+
+			if (eventName === 'click' && ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].indexOf(node.tagName) > -1) {
+				return !(node.disabled || parent(node, 'fieldset[disabled]'));
+			}
+			return true;
+		}
+
+		/**
+   * Returns true if the specified value is a NodeList or like one.
+   * @param {?} val Variable to test.
+   * @return {boolean} Whether variable is like a NodeList.
+   */
+		function isNodeListLike(val) {
+			return (0, _metal.isDefAndNotNull)(val) && typeof val.length === 'number' && typeof val.item === 'function';
+		}
+
+		/**
+   * Inserts node in document as last element.
+   * @param {Element} node Element to remove children from.
+   */
+		function enterDocument(node) {
+			node && append(document.body, node);
+		}
+
+		/**
+   * Removes node from document.
+   * @param {Element} node Element to remove children from.
+   */
+		function exitDocument(node) {
+			if (node && node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+		}
+
+		/**
+   * This is called when an event is triggered by a delegate listener. All
+   * matching listeners of this event type from `target` to `currentTarget` will
+   * be triggered.
+   * @param {!Event} event The event payload.
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function handleDelegateEvent_(event) {
+			normalizeDelegateEvent_(event);
+			var ret = true;
+			var container = event.currentTarget;
+			var defFns = [];
+
+			ret &= triggerDelegatedListeners_(container, event, defFns);
+			ret &= triggerDefaultDelegatedListeners_(defFns, event);
+
+			event.delegateTarget = null;
+			event[LAST_CONTAINER] = container;
+			return ret;
+		}
+
+		/**
+   * Checks if the given element has the requested css class.
+   * @param {!Element} element
+   * @param {string} className
+   * @return {boolean}
+   */
+		function hasClass(element, className) {
+			if ('classList' in element) {
+				return hasClassWithNative_(element, className);
+			} else {
+				return hasClassWithoutNative_(element, className);
+			}
+		}
+
+		/**
+   * Checks if the given element has the requested css class using classList.
+   * @param {!Element} element
+   * @param {string} className
+   * @return {boolean}
+   * @private
+   */
+		function hasClassWithNative_(element, className) {
+			return className.indexOf(' ') === -1 && element.classList.contains(className);
+		}
+
+		/**
+   * Checks if the given element has the requested css class without using classList.
+   * @param {!Element} element
+   * @param {string} className
+   * @return {boolean}
+   * @private
+   */
+		function hasClassWithoutNative_(element, className) {
+			return (' ' + element.className + ' ').indexOf(' ' + className + ' ') >= 0 && className.split(' ').length === 1;
+		}
+
+		/**
+   * Checks if the given element is empty or not.
+   * @param {!Element} element
+   * @return {boolean}
+   */
+		function isEmpty(element) {
+			return element.childNodes.length === 0;
+		}
+
+		/**
+   * IE11 doesn't support Element.matches function, this method
+   * check if an element matches a given selector.
+   * @param {Element} element
+   * @param {string} selector
+   * @return {boolean}
+   */
+		function match(element, selector) {
+			if (!element || element.nodeType !== 1) {
+				return false;
+			}
+
+			var p = Element.prototype;
+			var m = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || p.oMatchesSelector;
+			if (m) {
+				return m.call(element, selector);
+			}
+
+			return matchFallback_(element, selector);
+		}
+
+		/**
+   * Check if an element matches a given selector, using an internal implementation
+   * instead of calling existing javascript functions.
+   * @param {Element} element
+   * @param {string} selector
+   * @return {boolean}
+   * @private
+   */
+		function matchFallback_(element, selector) {
+			var parentNode = element.parentNode;
+
+			if (parentNode) {
+				var nodes = parentNode.querySelectorAll(selector);
+
+				for (var i = 0; i < nodes.length; ++i) {
+					if (nodes[i] === element) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/**
+   * Returns the next sibling of the given element that matches the specified
+   * selector, or null if there is none.
+   * @param {!Element} element
+   * @param {?string} selector
+   * @return {Element|null}
+   */
+		function next(element, selector) {
+			do {
+				element = element.nextSibling;
+				if (element && match(element, selector)) {
+					return element;
+				}
+			} while (element);
+			return null;
+		}
+
+		/**
+   * Normalizes the event payload for delegate listeners.
+   * @param {!Event} event
+   * @private
+   */
+		function normalizeDelegateEvent_(event) {
+			event.stopPropagation = stopPropagation_;
+			event.stopImmediatePropagation = stopImmediatePropagation_;
+		}
+
+		/**
+   * Listens to the specified event on the given DOM element. This function normalizes
+   * DOM event payloads and functions so they'll work the same way on all supported
+   * browsers.
+   * @param {!Element|string} element The DOM element to listen to the event on, or
+   *   a selector that should be delegated on the entire document.
+   * @param {string} eventName The name of the event to listen to.
+   * @param {!function(!Object)} callback Function to be called when the event is
+   *   triggered. It will receive the normalized event object.
+   * @param {boolean} capture Flag indicating if listener should be triggered
+   *   during capture phase, instead of during the bubbling phase. Defaults to false.
+   * @return {!DomEventHandle} Can be used to remove the listener.
+   */
+		function on(element, eventName, callback, capture) {
+			if ((0, _metal.isString)(element)) {
+				return delegate(document, eventName, element, callback);
+			}
+			var customConfig = customEvents[eventName];
+			if (customConfig && customConfig.event) {
+				eventName = customConfig.originalEvent;
+				callback = customConfig.handler.bind(customConfig, callback);
+			}
+			element.addEventListener(eventName, callback, capture);
+			return new _DomEventHandle2.default(element, eventName, callback, capture);
+		}
+
+		/**
+   * IE11 doesn't support once event listener option, this method
+   * Listens to the specified event on the given DOM element once. This
+   * function normalizes DOM event payloads and functions so they'll work the
+   * same way on all supported browsers.
+   * @param {!Element} element The DOM element to listen to the event on.
+   * @param {string} eventName The name of the event to listen to.
+   * @param {!function(!Object)} callback Function to be called when the event
+   *   is triggered. It will receive the normalized event object.
+   * @return {!DomEventHandle} Can be used to remove the listener.
+   */
+		function once(element, eventName, callback) {
+			var domEventHandle = on(element, eventName, function () {
+				domEventHandle.removeListener();
+				return callback.apply(this, arguments); // eslint-disable-line
+			});
+			return domEventHandle;
+		}
+
+		/**
+   * Gets the first parent from the given element that matches the specified
+   * selector, or null if none match.
+   * @param {!Element} element
+   * @param {string} selector
+   * @return {Element}
+   */
+		function parent(element, selector) {
+			return closest(element.parentNode, selector);
+		}
+
+		/**
+   * IE11 doesn't support Element.prepend function, this method
+   * inserts a node before first child of the parent. If child is a HTML string
+   * it will be converted to document fragment before prepending it to the parent.
+   * @param {!Element} parent The node to prepend to.
+   * @param {!(Element|NodeList|string)} child The thing to prepend to the parent.
+   * @return {!Element} The prepended child.
+   */
+		function prepend(parent, child) {
+			if ((0, _metal.isString)(child)) {
+				child = buildFragment(child);
+			}
+
+			if (!isNodeListLike(child) && !(0, _metal.isDefAndNotNull)(parent.firstChild)) {
+				return append(parent, child);
+			}
+
+			if (isNodeListLike(child)) {
+				var childArr = Array.prototype.slice.call(child);
+				for (var i = childArr.length - 1; i >= 0; i--) {
+					parent.insertBefore(childArr[i], parent.firstChild);
+				}
+			} else {
+				parent.insertBefore(child, parent.firstChild);
+			}
+
+			return child;
+		}
+
+		/**
+   * Registers a custom event.
+   * @param {string} eventName The name of the custom event.
+   * @param {!Object} customConfig An object with information about how the event
+   *   should be handled.
+   */
+		function registerCustomEvent(eventName, customConfig) {
+			customEvents[eventName] = customConfig;
+		}
+
+		/**
+   * Removes all the child nodes on a DOM node.
+   * @param {Element} node Element to remove children from.
+   */
+		function removeChildren(node) {
+			var child = void 0;
+			while (child = node.firstChild) {
+				node.removeChild(child);
+			}
+		}
+
+		/**
+   * Removes the requested CSS classes from an element.
+   * @param {!Element|!NodeList} elements The element or elements to remove CSS classes from.
+   * @param {string} classes CSS classes to remove.
+   */
+		function removeClasses(elements, classes) {
+			if (!(0, _metal.isObject)(elements) || !(0, _metal.isString)(classes)) {
+				return;
+			}
+
+			if (!elements.length) {
+				elements = [elements];
+			}
+
+			for (var i = 0; i < elements.length; i++) {
+				if ('classList' in elements[i]) {
+					removeClassesWithNative_(elements[i], classes);
+				} else {
+					removeClassesWithoutNative_(elements[i], classes);
+				}
+			}
+		}
+
+		/**
+   * Removes the requested CSS classes from an element using classList.
+   * @param {!Element} element The element to remove CSS classes from.
+   * @param {string} classes CSS classes to remove.
+   * @private
+   */
+		function removeClassesWithNative_(element, classes) {
+			classes.split(' ').forEach(function (className) {
+				if (className) {
+					element.classList.remove(className);
+				}
+			});
+		}
+
+		/**
+   * IE11 doesn't support Element.classList, this method
+   * removes the requested CSS classes from an element without using classList.
+   * @param {!Element} element The element to remove CSS classes from.
+   * @param {string} classes CSS classes to remove.
+   * @private
+   */
+		function removeClassesWithoutNative_(element, classes) {
+			var elementClassName = ' ' + element.className + ' ';
+
+			classes = classes.split(' ');
+
+			for (var i = 0; i < classes.length; i++) {
+				elementClassName = elementClassName.replace(' ' + classes[i] + ' ', ' ');
+			}
+
+			element.className = elementClassName.trim();
+		}
+
+		/**
+   * Replaces the first element with the second.
+   * @deprecated Use element1.parentNode.replaceChild(element2, element1)
+   * directly instead of this method
+   * @param {Element} element1
+   * @param {Element} element2
+   */
+		function replace(element1, element2) {
+			if (element1 && element2 && element1 !== element2 && element1.parentNode) {
+				element1.parentNode.replaceChild(element2, element1);
+			}
+		}
+
+		/**
+   * The function that replaces `stopImmediatePropagation_` for events.
+   * @private
+   */
+		function stopImmediatePropagation_() {
+			var event = this; // eslint-disable-line
+			event.stopped = true;
+			event.stoppedImmediate = true;
+			Event.prototype.stopImmediatePropagation.call(event);
+		}
+
+		/**
+   * The function that replaces `stopPropagation` for events.
+   * @private
+   */
+		function stopPropagation_() {
+			var event = this; // eslint-disable-line
+			event.stopped = true;
+			Event.prototype.stopPropagation.call(event);
+		}
+
+		/**
+   * Checks if the given element supports the given event type.
+   * @param {!Element|string} element The DOM element or element tag name to check.
+   * @param {string} eventName The name of the event to check.
+   * @return {boolean}
+   */
+		function supportsEvent(element, eventName) {
+			if (customEvents[eventName]) {
+				return true;
+			}
+
+			if ((0, _metal.isString)(element)) {
+				if (!elementsByTag_[element]) {
+					elementsByTag_[element] = document.createElement(element);
+				}
+				element = elementsByTag_[element];
+			}
+
+			var tag = element.tagName;
+			if (!supportCache_[tag] || !supportCache_[tag].hasOwnProperty(eventName)) {
+				supportCache_[tag] = supportCache_[tag] || {};
+				supportCache_[tag][eventName] = 'on' + eventName in element;
+			}
+			return supportCache_[tag][eventName];
+		}
+
+		/**
+   * This triggers all default matched delegated listeners of a given event type.
+   * @param {!Array} defFns Array to collect default listeners in, instead
+   * @param {!Event} event
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function triggerDefaultDelegatedListeners_(defFns, event) {
+			var ret = true;
+
+			for (var i = 0; i < defFns.length && !event.defaultPrevented; i++) {
+				event.delegateTarget = defFns[i].element;
+				ret &= defFns[i].fn(event);
+			}
+
+			return ret;
+		}
+
+		/**
+   * This triggers all matched delegated listeners of a given event type when its
+   * delegated target is able to interact.
+   * @param {!Element} container
+   * @param {!Event} event
+   * @param {!Array} defaultFns Array to collect default listeners in, instead
+   *     of running them.
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function triggerDelegatedListeners_(container, event, defaultFns) {
+			var ret = true;
+			var currElement = event.target;
+			var limit = container.parentNode;
+
+			while (currElement && currElement !== limit && !event.stopped) {
+				if (isAbleToInteractWith_(currElement, event.type, event)) {
+					event.delegateTarget = currElement;
+					ret &= triggerElementListeners_(currElement, event, defaultFns);
+					ret &= triggerSelectorListeners_(container, currElement, event, defaultFns);
+				}
+				currElement = currElement.parentNode;
+			}
+
+			return ret;
+		}
+
+		/**
+   * Converts the given argument to a DOM element. Strings are assumed to
+   * be selectors, and so a matched element will be returned. If the arg
+   * is already a DOM element it will be the return value.
+   * @param {string|Element|Document} selectorOrElement
+   * @return {Element} The converted element, or null if none was found.
+   */
+		function toElement(selectorOrElement) {
+			if ((0, _metal.isElement)(selectorOrElement) || (0, _metal.isDocument)(selectorOrElement) || (0, _metal.isDocumentFragment)(selectorOrElement)) {
+				return selectorOrElement;
+			} else if ((0, _metal.isString)(selectorOrElement)) {
+				return document.querySelector(selectorOrElement);
+			} else {
+				return null;
+			}
+		}
+
+		/**
+   * Adds or removes one or more classes from an element. If any of the classes
+   * is present, it will be removed from the element, or added otherwise.
+   * @param {!Element} element The element which classes will be toggled.
+   * @param {string} classes The classes which have to added or removed from the element.
+   */
+		function toggleClasses(element, classes) {
+			if (!(0, _metal.isObject)(element) || !(0, _metal.isString)(classes)) {
+				return;
+			}
+
+			if ('classList' in element) {
+				toggleClassesWithNative_(element, classes);
+			} else {
+				toggleClassesWithoutNative_(element, classes);
+			}
+		}
+
+		/**
+   * Adds or removes one or more classes from an element using classList.
+   * If any of the classes is present, it will be removed from the element,
+   * or added otherwise.
+   * @param {!Element} element The element which classes will be toggled.
+   * @param {string} classes The classes which have to added or removed from the element.
+   * @private
+   */
+		function toggleClassesWithNative_(element, classes) {
+			classes.split(' ').forEach(function (className) {
+				element.classList.toggle(className);
+			});
+		}
+
+		/**
+   * IE11 doesn't support Element.classList, this method
+   * adds or removes one or more classes from an element without using classList.
+   * If any of the classes is present, it will be removed from the element,
+   * or added otherwise.
+   * @param {!Element} element The element which classes will be toggled.
+   * @param {string} classes The classes which have to added or removed from the element.
+   * @private
+   */
+		function toggleClassesWithoutNative_(element, classes) {
+			var elementClassName = ' ' + element.className + ' ';
+
+			classes = classes.split(' ');
+
+			for (var i = 0; i < classes.length; i++) {
+				var className = ' ' + classes[i] + ' ';
+				var classIndex = elementClassName.indexOf(className);
+
+				if (classIndex === -1) {
+					elementClassName = '' + elementClassName + classes[i] + ' ';
+				} else {
+					var before = elementClassName.substring(0, classIndex);
+					var after = elementClassName.substring(classIndex + className.length); // eslint-disable-line
+					elementClassName = before + ' ' + after;
+				}
+			}
+
+			element.className = elementClassName.trim();
+		}
+
+		/**
+   * Triggers all listeners for the given event type that are stored in the
+   * specified element.
+   * @param {!Element} element
+   * @param {!Event} event
+   * @param {!Array} defaultFns Array to collect default listeners in, instead
+   *     of running them.
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function triggerElementListeners_(element, event, defaultFns) {
+			var lastContainer = event[LAST_CONTAINER];
+			if (!(0, _metal.isDef)(lastContainer) || !contains(lastContainer, element)) {
+				var listeners = _domData2.default.get(element, 'listeners', {})[event.type];
+				return triggerListeners_(listeners, event, element, defaultFns);
+			}
+			return true;
+		}
+
+		/**
+   * Triggers the specified event on the given element.
+   * NOTE: This should mostly be used for testing, not on real code.
+   * @param {!Element} element The node that should trigger the event.
+   * @param {string} eventName The name of the event to be triggred.
+   * @param {Object=} eventObj An object with data that should be on the
+   *   triggered event's payload.
+   */
+		function triggerEvent(element, eventName, eventObj) {
+			if (isAbleToInteractWith_(element, eventName, eventObj)) {
+				var payload = document.createEvent('HTMLEvents');
+				payload.initEvent(eventName, true, true);
+				_metal.object.mixin(payload, eventObj);
+				element.dispatchEvent(payload);
+			}
+		}
+
+		/**
+   * Triggers the given listeners array.
+   * @param {Array<!function()>} listeners
+   * @param {!Event} event
+   * @param {!Element} element
+   * @param {!Array} defaultFns Array to collect default listeners in, instead
+   *     of running them.
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function triggerListeners_(listeners, event, element, defaultFns) {
+			var ret = true;
+			listeners = listeners || [];
+			for (var i = 0; i < listeners.length && !event.stoppedImmediate; i++) {
+				if (listeners[i].defaultListener_) {
+					defaultFns.push({
+						element: element,
+						fn: listeners[i]
+					});
+				} else {
+					ret &= listeners[i](event);
+				}
+			}
+			return ret;
+		}
+
+		/**
+   * Triggers all selector listeners for the given event.
+   * @param {!Element} container
+   * @param {!Element} element
+   * @param {!Event} event
+   * @param {!Array} defaultFns Array to collect default listeners in, instead
+   *     of running them.
+   * @return {boolean} False if at least one of the triggered callbacks returns
+   *     false, or true otherwise.
+   * @private
+   */
+		function triggerSelectorListeners_(container, element, event, defaultFns) {
+			var ret = true;
+			var data = _domData2.default.get(container, 'delegating', {});
+			var map = data[event.type].selectors;
+			var selectors = Object.keys(map);
+			for (var i = 0; i < selectors.length && !event.stoppedImmediate; i++) {
+				if (match(element, selectors[i])) {
+					var listeners = map[selectors[i]];
+					ret &= triggerListeners_(listeners, event, element, defaultFns);
+				}
+			}
+			return ret;
+		}
+		//# sourceMappingURL=domNamed.js.map
+	}
+});
+//# sourceMappingURL=domNamed.js.map
+'use strict';
+
+// This file exists just for backwards compatibility, making sure that old
+// default imports for this file still work. It's best to use the named exports
+// for each function instead though, since that allows bundlers like Rollup to
+// reduce the bundle size by removing unused code.
+
+Liferay.Loader.define('frontend-js-metal-web$metal-dom@2.16.8/lib/dom', ['module', 'exports', 'require', './domNamed'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.dom = undefined;
+
+    var _domNamed = require('./domNamed');
+
+    Object.keys(_domNamed).forEach(function (key) {
+      if (key === "default" || key === "__esModule") return;
+      Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+          return _domNamed[key];
+        }
+      });
+    });
+
+    var dom = _interopRequireWildcard(_domNamed);
+
+    function _interopRequireWildcard(obj) {
+      if (obj && obj.__esModule) {
+        return obj;
+      } else {
+        var newObj = {};if (obj != null) {
+          for (var key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+          }
+        }newObj.default = obj;return newObj;
+      }
+    }
+
+    exports.default = dom;
+    exports.dom = dom;
+    //# sourceMappingURL=dom.js.map
+  }
+});
+//# sourceMappingURL=dom.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/DomEventEmitterProxy", ['module', 'exports', 'require', './dom', 'frontend-js-metal-web$metal-events'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _get = function get(object, property, receiver) {
+			if (object === null) object = Function.prototype;var desc = Object.getOwnPropertyDescriptor(object, property);if (desc === undefined) {
+				var parent = Object.getPrototypeOf(object);if (parent === null) {
+					return undefined;
+				} else {
+					return get(parent, property, receiver);
+				}
+			} else if ("value" in desc) {
+				return desc.value;
+			} else {
+				var getter = desc.get;if (getter === undefined) {
+					return undefined;
+				}return getter.call(receiver);
+			}
+		};
+
+		var _dom = require('./dom');
+
+		var _metalEvents = require("frontend-js-metal-web$metal-events");
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		function _possibleConstructorReturn(self, call) {
+			if (!self) {
+				throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+			}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+		}
+
+		function _inherits(subClass, superClass) {
+			if (typeof superClass !== "function" && superClass !== null) {
+				throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+			}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+		}
+
+		/**
+   * DomEventEmitterProxy utility. It extends `EventEmitterProxy` to also accept
+   * dom elements as origin emitters.
+   * @extends {EventEmitterProxy}
+   */
+		var DomEventEmitterProxy = function (_EventEmitterProxy) {
+			_inherits(DomEventEmitterProxy, _EventEmitterProxy);
+
+			function DomEventEmitterProxy() {
+				_classCallCheck(this, DomEventEmitterProxy);
+
+				return _possibleConstructorReturn(this, (DomEventEmitterProxy.__proto__ || Object.getPrototypeOf(DomEventEmitterProxy)).apply(this, arguments));
+			}
+
+			_createClass(DomEventEmitterProxy, [{
+				key: 'addListener_',
+
+				/**
+     * Adds the given listener for the given event.
+     * @param {string} event
+     * @param {!function()} listener
+     * @return {!EventHandle} The listened event's handle.
+     * @protected
+     * @override
+     */
+				value: function addListener_(event, listener) {
+					if (this.originEmitter_.addEventListener) {
+						if (this.isDelegateEvent_(event)) {
+							var index = event.indexOf(':', 9);
+							var eventName = event.substring(9, index);
+							var selector = event.substring(index + 1);
+							return (0, _dom.delegate)(this.originEmitter_, eventName, selector, listener); // eslint-disable-line
+						} else {
+							return (0, _dom.on)(this.originEmitter_, event, listener);
+						}
+					} else {
+						return _get(DomEventEmitterProxy.prototype.__proto__ || Object.getPrototypeOf(DomEventEmitterProxy.prototype), 'addListener_', this).call(this, event, listener);
+					}
+				}
+
+				/**
+     * Checks if the given event is of the delegate type.
+     * @param {string} event
+     * @return {boolean}
+     * @protected
+     */
+
+			}, {
+				key: 'isDelegateEvent_',
+				value: function isDelegateEvent_(event) {
+					return event.substr(0, 9) === 'delegate:';
+				}
+
+				/**
+     * Checks if the given event is supported by the origin element.
+     * @param {string} event
+     * @protected
+     * @return {boolean}
+     */
+
+			}, {
+				key: 'isSupportedDomEvent_',
+				value: function isSupportedDomEvent_(event) {
+					if (!this.originEmitter_ || !this.originEmitter_.addEventListener) {
+						return true;
+					}
+					return this.isDelegateEvent_(event) && event.indexOf(':', 9) !== -1 || (0, _dom.supportsEvent)(this.originEmitter_, event);
+				}
+
+				/**
+     * Checks if the given event should be proxied.
+     * @param {string} event
+     * @return {boolean}
+     * @protected
+     * @override
+     */
+
+			}, {
+				key: 'shouldProxyEvent_',
+				value: function shouldProxyEvent_(event) {
+					return _get(DomEventEmitterProxy.prototype.__proto__ || Object.getPrototypeOf(DomEventEmitterProxy.prototype), 'shouldProxyEvent_', this).call(this, event) && this.isSupportedDomEvent_(event); // eslint-disable-line
+				}
+			}]);
+
+			return DomEventEmitterProxy;
+		}(_metalEvents.EventEmitterProxy);
+
+		exports.default = DomEventEmitterProxy;
+		//# sourceMappingURL=DomEventEmitterProxy.js.map
+	}
+});
+//# sourceMappingURL=DomEventEmitterProxy.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/features", ['module', 'exports', 'require', './dom', 'frontend-js-metal-web$metal'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _dom = require('./dom');
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		/**
+   * Class with static methods responsible for doing browser feature checks.
+   */
+		var features = function () {
+			function features() {
+				_classCallCheck(this, features);
+			}
+
+			_createClass(features, null, [{
+				key: 'checkAnimationEventName',
+
+				/**
+     * Some browsers still supports prefixed animation events. This method can
+     * be used to retrieve the current browser event name for both, animation
+     * and transition.
+     * @return {object}
+     */
+				value: function checkAnimationEventName() {
+					if (features.animationEventName_ === undefined) {
+						features.animationEventName_ = {
+							animation: features.checkAnimationEventName_('animation'),
+							transition: features.checkAnimationEventName_('transition')
+						};
+					}
+					return features.animationEventName_;
+				}
+
+				/**
+     * @protected
+     * @param {string} type Type to test: animation, transition.
+     * @return {string} Browser event name.
+     */
+
+			}, {
+				key: 'checkAnimationEventName_',
+				value: function checkAnimationEventName_(type) {
+					var prefixes = ['Webkit', 'MS', 'O', ''];
+					var typeTitleCase = _metal.string.replaceInterval(type, 0, 1, type.substring(0, 1).toUpperCase());
+					var suffixes = [typeTitleCase + 'End', typeTitleCase + 'End', typeTitleCase + 'End', type + 'end'];
+					if (!features.animationElement_) {
+						features.animationElement_ = document.createElement('div');
+					}
+					for (var i = 0; i < prefixes.length; i++) {
+						if (features.animationElement_.style[prefixes[i] + typeTitleCase] !== undefined // eslint-disable-line
+						) {
+								return prefixes[i].toLowerCase() + suffixes[i];
+							}
+					}
+					return type + 'end';
+				}
+
+				/**
+     * Some browsers (like IE11, Edge) change the order of element attributes, when html
+     * is rendered. This method can be used to check if this behavior happens on
+     * the current browser.
+     * @return {boolean}
+     */
+
+			}, {
+				key: 'checkAttrOrderChange',
+				value: function checkAttrOrderChange() {
+					if (features.attrOrderChange_ === undefined) {
+						var originalContent = '<div data-component="" data-ref=""></div>';
+						var element = document.createElement('div');
+						(0, _dom.append)(element, originalContent);
+						features.attrOrderChange_ = originalContent !== element.innerHTML;
+					}
+					return features.attrOrderChange_;
+				}
+			}]);
+
+			return features;
+		}();
+
+		features.animationElement_ = undefined;
+		features.animationEventName_ = undefined;
+		features.attrOrderChange_ = undefined;
+
+		exports.default = features;
+		//# sourceMappingURL=features.js.map
+	}
+});
+//# sourceMappingURL=features.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/globalEval", ['module', 'exports', 'require', 'frontend-js-metal-web$metal', './dom'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		var _dom = require('./dom');
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		/**
+   * Utility functions for running javascript code in the global scope.
+   */
+		var globalEval = function () {
+			function globalEval() {
+				_classCallCheck(this, globalEval);
+			}
+
+			_createClass(globalEval, null, [{
+				key: 'run',
+
+				/**
+     * Evaluates the given string in the global scope.
+     * @param {string} text
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     * @return {Element} script
+     */
+				value: function run(text, appendFn) {
+					var script = document.createElement('script');
+					script.text = text;
+					if (appendFn) {
+						appendFn(script);
+					} else {
+						document.head.appendChild(script);
+					}
+					(0, _dom.exitDocument)(script);
+					return script;
+				}
+
+				/**
+     * Evaluates the given javascript file in the global scope.
+     * @param {string} src The file's path.
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the script has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     * @return {Element} script
+     */
+
+			}, {
+				key: 'runFile',
+				value: function runFile(src, defaultFn, appendFn) {
+					var script = document.createElement('script');
+					script.src = src;
+
+					var callback = function callback() {
+						(0, _dom.exitDocument)(script);
+						defaultFn && defaultFn();
+					};
+					(0, _dom.once)(script, 'load', callback);
+					(0, _dom.once)(script, 'error', callback);
+
+					if (appendFn) {
+						appendFn(script);
+					} else {
+						document.head.appendChild(script);
+					}
+
+					return script;
+				}
+
+				/**
+     * Evaluates the code referenced by the given script element.
+     * @param {!Element} script
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the script has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     * @return {Element} script
+     */
+
+			}, {
+				key: 'runScript',
+				value: function runScript(script, defaultFn, appendFn) {
+					var callback = function callback() {
+						defaultFn && defaultFn();
+					};
+					if (script.type && script.type !== 'text/javascript') {
+						_metal.async.nextTick(callback);
+						return;
+					}
+					(0, _dom.exitDocument)(script);
+					if (script.src) {
+						return globalEval.runFile(script.src, defaultFn, appendFn);
+					} else {
+						_metal.async.nextTick(callback);
+						return globalEval.run(script.text, appendFn);
+					}
+				}
+
+				/**
+     * Evaluates any script tags present in the given element.
+     * @param {!Element} element
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the script has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     */
+
+			}, {
+				key: 'runScriptsInElement',
+				value: function runScriptsInElement(element, defaultFn, appendFn) {
+					var scripts = element.querySelectorAll('script');
+					if (scripts.length) {
+						globalEval.runScriptsInOrder(scripts, 0, defaultFn, appendFn);
+					} else if (defaultFn) {
+						_metal.async.nextTick(defaultFn);
+					}
+				}
+
+				/**
+     * Runs the given scripts elements in the order that they appear.
+     * @param {!NodeList} scripts
+     * @param {number} index
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the script has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     */
+
+			}, {
+				key: 'runScriptsInOrder',
+				value: function runScriptsInOrder(scripts, index, defaultFn, appendFn) {
+					globalEval.runScript(scripts.item(index), function () {
+						if (index < scripts.length - 1) {
+							globalEval.runScriptsInOrder(scripts, index + 1, defaultFn, appendFn); // eslint-disable-line
+						} else if (defaultFn) {
+							_metal.async.nextTick(defaultFn);
+						}
+					}, appendFn);
+				}
+			}]);
+
+			return globalEval;
+		}();
+
+		exports.default = globalEval;
+		//# sourceMappingURL=globalEval.js.map
+	}
+});
+//# sourceMappingURL=globalEval.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-dom@2.16.8/lib/globalEvalStyles", ['module', 'exports', 'require', 'frontend-js-metal-web$metal', './dom'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		var _dom = require('./dom');
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		/**
+   * Utility functions for running styles.
+   */
+		var globalEvalStyles = function () {
+			function globalEvalStyles() {
+				_classCallCheck(this, globalEvalStyles);
+			}
+
+			_createClass(globalEvalStyles, null, [{
+				key: 'run',
+
+				/**
+     * Evaluates the given style.
+     * @param {string} text
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     * @return {Element} style
+     */
+				value: function run(text, appendFn) {
+					var style = document.createElement('style');
+					style.innerHTML = text;
+					if (appendFn) {
+						appendFn(style);
+					} else {
+						document.head.appendChild(style);
+					}
+					return style;
+				}
+
+				/**
+     * Evaluates the given style file.
+     * @param {string} href The file's path.
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the styles has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     * @return {Element} style
+     */
+
+			}, {
+				key: 'runFile',
+				value: function runFile(href, defaultFn, appendFn) {
+					var link = document.createElement('link');
+					link.rel = 'stylesheet';
+					link.href = href;
+					globalEvalStyles.runStyle(link, defaultFn, appendFn);
+					return link;
+				}
+
+				/**
+     * Evaluates the code referenced by the given style/link element.
+     * @param {!Element} style
+     * @param {function()=} defaultFn Optional function to be called
+     *   when the script has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     *  @return {Element} style
+     */
+
+			}, {
+				key: 'runStyle',
+				value: function runStyle(style, defaultFn, appendFn) {
+					var callback = function callback() {
+						defaultFn && defaultFn();
+					};
+					if (style.rel && style.rel !== 'stylesheet' && style.rel !== 'canonical' && style.rel !== 'alternate') {
+						_metal.async.nextTick(callback);
+						return;
+					}
+
+					if (style.tagName === 'STYLE' || style.rel === 'canonical' || style.rel === 'alternate') {
+						_metal.async.nextTick(callback);
+					} else {
+						(0, _dom.once)(style, 'load', callback);
+						(0, _dom.once)(style, 'error', callback);
+					}
+
+					if (appendFn) {
+						appendFn(style);
+					} else {
+						document.head.appendChild(style);
+					}
+
+					return style;
+				}
+
+				/**
+     * Evaluates any style present in the given element.
+     * @param {!Element} element
+     * @param {function()=} defaultFn Optional function to be called when the
+     *   style has been run.
+     * @param {function()=} appendFn Optional function to append the node
+     *   into document.
+     */
+
+			}, {
+				key: 'runStylesInElement',
+				value: function runStylesInElement(element, defaultFn, appendFn) {
+					var styles = element.querySelectorAll('style,link');
+					if (styles.length === 0 && defaultFn) {
+						_metal.async.nextTick(defaultFn);
+						return;
+					}
+
+					var loadCount = 0;
+					var callback = function callback() {
+						if (defaultFn && ++loadCount === styles.length) {
+							_metal.async.nextTick(defaultFn);
+						}
+					};
+					for (var i = 0; i < styles.length; i++) {
+						globalEvalStyles.runStyle(styles[i], callback, appendFn);
+					}
+				}
+			}]);
+
+			return globalEvalStyles;
+		}();
+
+		exports.default = globalEvalStyles;
+		//# sourceMappingURL=globalEvalStyles.js.map
+	}
+});
+//# sourceMappingURL=globalEvalStyles.js.map
+'use strict';
+
+Liferay.Loader.define('frontend-js-metal-web$metal-dom@2.16.8/lib/events', ['module', 'exports', 'require', 'frontend-js-metal-web$metal', './dom', './features'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		var _metal = require('frontend-js-metal-web$metal');
+
+		var _dom = require('./dom');
+
+		var _features = require('./features');
+
+		var _features2 = _interopRequireDefault(_features);
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		/**
+   * Register custom events for event delegation.
+   */
+		function registerEvents() {
+			var mouseEventMap = {
+				mouseenter: 'mouseover',
+				mouseleave: 'mouseout',
+				pointerenter: 'pointerover',
+				pointerleave: 'pointerout'
+			};
+			Object.keys(mouseEventMap).forEach(function (eventName) {
+				(0, _dom.registerCustomEvent)(eventName, {
+					delegate: true,
+					handler: function handler(callback, event) {
+						var related = event.relatedTarget;
+						var target = event.delegateTarget;
+						// eslint-disable-next-line
+						if (!related || related !== target && !(0, _dom.contains)(target, related)) {
+							event.customType = eventName;
+							return callback(event);
+						}
+					},
+					originalEvent: mouseEventMap[eventName]
+				});
+			});
+
+			var animationEventMap = {
+				animation: 'animationend',
+				transition: 'transitionend'
+			};
+			Object.keys(animationEventMap).forEach(function (eventType) {
+				var eventName = animationEventMap[eventType];
+				(0, _dom.registerCustomEvent)(eventName, {
+					event: true,
+					delegate: true,
+					handler: function handler(callback, event) {
+						event.customType = eventName;
+						return callback(event);
+					},
+					originalEvent: _features2.default.checkAnimationEventName()[eventType]
+				});
+			});
+		}
+
+		if (!(0, _metal.isServerSide)()) {
+			registerEvents();
+		}
+		//# sourceMappingURL=events.js.map
+	}
+});
+//# sourceMappingURL=events.js.map
+'use strict';
+
+Liferay.Loader.define('frontend-js-metal-web$metal-dom@2.16.8/lib/all/dom', ['module', 'exports', 'require', '../dom', '../domData', '../DomEventEmitterProxy', '../DomEventHandle', '../features', '../globalEval', '../globalEvalStyles', '../events'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+		exports.globalEvalStyles = exports.globalEval = exports.features = exports.DomEventHandle = exports.DomEventEmitterProxy = exports.domData = undefined;
+
+		var _dom = require('../dom');
+
+		Object.keys(_dom).forEach(function (key) {
+			if (key === "default" || key === "__esModule") return;
+			Object.defineProperty(exports, key, {
+				enumerable: true,
+				get: function get() {
+					return _dom[key];
+				}
+			});
+		});
+
+		var _dom2 = _interopRequireDefault(_dom);
+
+		var _domData = require('../domData');
+
+		var _domData2 = _interopRequireDefault(_domData);
+
+		var _DomEventEmitterProxy = require('../DomEventEmitterProxy');
+
+		var _DomEventEmitterProxy2 = _interopRequireDefault(_DomEventEmitterProxy);
+
+		var _DomEventHandle = require('../DomEventHandle');
+
+		var _DomEventHandle2 = _interopRequireDefault(_DomEventHandle);
+
+		var _features = require('../features');
+
+		var _features2 = _interopRequireDefault(_features);
+
+		var _globalEval = require('../globalEval');
+
+		var _globalEval2 = _interopRequireDefault(_globalEval);
+
+		var _globalEvalStyles = require('../globalEvalStyles');
+
+		var _globalEvalStyles2 = _interopRequireDefault(_globalEvalStyles);
+
+		require('../events');
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		exports.domData = _domData2.default;
+		exports.DomEventEmitterProxy = _DomEventEmitterProxy2.default;
+		exports.DomEventHandle = _DomEventHandle2.default;
+		exports.features = _features2.default;
+		exports.globalEval = _globalEval2.default;
+		exports.globalEvalStyles = _globalEvalStyles2.default;
+		exports.default = _dom2.default;
+		//# sourceMappingURL=dom.js.map
+	}
+});
+//# sourceMappingURL=dom.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-component@2.16.8/lib/ComponentDataManager", ['module', 'exports', 'require', 'frontend-js-metal-web$metal', 'frontend-js-metal-web$metal-state'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		var _metalState = require("frontend-js-metal-web$metal-state");
+
+		var _metalState2 = _interopRequireDefault(_metalState);
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		var BLACKLIST = {
+			components: true,
+			context: true,
+			element: true,
+			refs: true,
+			state: true,
+			stateKey: true,
+			wasRendered: true
+		};
+		var DATA_MANAGER_DATA = '__DATA_MANAGER_DATA__';
+
+		/**
+   * Class to handle Component Data
+   */
+
+		var ComponentDataManager = function () {
+			function ComponentDataManager() {
+				_classCallCheck(this, ComponentDataManager);
+			}
+
+			_createClass(ComponentDataManager, [{
+				key: 'createState_',
+
+				/**
+     * Creates the `State` instance that will handle the main component data.
+     * @param {!Component} component
+     * @param {!Object} data
+     * @protected
+     */
+				value: function createState_(component, data) {
+					var state = new _metalState2.default(component.getInitialConfig(), component, component); // eslint-disable-line
+					state.setKeysBlacklist(BLACKLIST);
+					state.configState(_metal.object.mixin({}, data, _metalState2.default.getStateStatic(component.constructor)));
+					this.getManagerData(component).state_ = state;
+				}
+
+				/**
+     * Disposes of any data being used by the manager in this component.
+     * @param {!Component} component
+     */
+
+			}, {
+				key: 'dispose',
+				value: function dispose(component) {
+					var data = this.getManagerData(component);
+					if (data.state_) {
+						data.state_.dispose();
+					}
+					component[DATA_MANAGER_DATA] = null;
+				}
+
+				/**
+     * Gets the data with the given name.
+     * @param {!Component} component
+     * @param {string} name
+     * @return {*}
+     */
+
+			}, {
+				key: 'get',
+				value: function get(component, name) {
+					return this.getManagerData(component).state_.get(name);
+				}
+
+				/**
+     * Gets the manager data for the given component.
+     * @param {!Component} component
+     * @return {Object}
+     */
+
+			}, {
+				key: 'getManagerData',
+				value: function getManagerData(component) {
+					return component[DATA_MANAGER_DATA];
+				}
+
+				/**
+     * Gets the keys for state data that can be synced via `sync` functions.
+     * @param {!Component} component
+     * @return {!Array<string>}
+     */
+
+			}, {
+				key: 'getSyncKeys',
+				value: function getSyncKeys(component) {
+					return this.getManagerData(component).state_.getStateKeys();
+				}
+
+				/**
+     * Gets the keys for state data.
+     * @param {!Component} component
+     * @return {!Array<string>}
+     */
+
+			}, {
+				key: 'getStateKeys',
+				value: function getStateKeys(component) {
+					return this.getManagerData(component).state_.getStateKeys();
+				}
+
+				/**
+     * Gets the whole state data.
+     * @param {!Component} component
+     * @return {!Object}
+     */
+
+			}, {
+				key: 'getState',
+				value: function getState(component) {
+					return this.getManagerData(component).state_.getState();
+				}
+
+				/**
+     * Gets the `State` instance being used.
+     * @param {!Component} component
+     * @return {!Object}
+     */
+
+			}, {
+				key: 'getStateInstance',
+				value: function getStateInstance(component) {
+					return this.getManagerData(component).state_;
+				}
+
+				/**
+     * Updates all non internal data with the given values (or to the default
+     * value if none is given).
+     * @param {!Component} component
+     * @param {!Object} data
+     * @param {State=} state
+     */
+
+			}, {
+				key: 'replaceNonInternal',
+				value: function replaceNonInternal(component, data) {
+					var state = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.getManagerData(component).state_;
+
+					var keys = state.getStateKeys();
+					for (var i = 0; i < keys.length; i++) {
+						var key = keys[i];
+						if (!state.getStateKeyConfig(key).internal) {
+							if (data.hasOwnProperty(key) && (0, _metal.isDef)(data[key])) {
+								state.set(key, data[key]);
+							} else {
+								state.setDefaultValue(key);
+							}
+						}
+					}
+				}
+
+				/**
+     * Sets the value of all the specified state keys.
+     * @param {!Component} component
+     * @param {!Object.<string,*>} state A map of state keys to the values they
+     *   should be set to.
+     * @param {function()=} callback An optional function that will be run
+     *   after the next batched update is triggered.
+     */
+
+			}, {
+				key: 'setState',
+				value: function setState(component, state, callback) {
+					this.getManagerData(component).state_.setState(state, callback);
+				}
+
+				/**
+     * Sets up the specified component's data.
+     * @param {!Component} component
+     * @param {!Object} data
+     */
+
+			}, {
+				key: 'setUp',
+				value: function setUp(component, data) {
+					component[DATA_MANAGER_DATA] = {};
+					this.createState_(component, data);
+				}
+			}]);
+
+			return ComponentDataManager;
+		}();
+
+		exports.default = new ComponentDataManager();
+		//# sourceMappingURL=ComponentDataManager.js.map
+	}
+});
+//# sourceMappingURL=ComponentDataManager.js.map
+'use strict';
+
+/**
+ * Base class that component renderers should extend from. It defines the
+ * required methods all renderers should have.
+ */
+
+Liferay.Loader.define("frontend-js-metal-web$metal-component@2.16.8/lib/ComponentRenderer", ['module', 'exports', 'require'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		var ComponentRenderer = function () {
+			function ComponentRenderer() {
+				_classCallCheck(this, ComponentRenderer);
+			}
+
+			_createClass(ComponentRenderer, [{
+				key: 'dispose',
+
+				/**
+     * Disposes of any data specific to the given component.
+     * @param {!Component} component
+     */
+				value: function dispose() {}
+
+				/**
+     * Returns extra configuration for data that should be added to the manager.
+     * Sub classes can override to return `State` config for properties that
+     * should be added to the component.
+     * @param {!Component} component
+     */
+
+			}, {
+				key: 'getExtraDataConfig',
+				value: function getExtraDataConfig() {}
+
+				/**
+     * Renders the whole content (including its main element) and informs the
+     * component about it. Should be overridden by sub classes.
+     * @param {!Component} component
+     */
+
+			}, {
+				key: 'render',
+				value: function render(component) {
+					if (!component.element) {
+						component.element = document.createElement('div');
+					}
+					component.informRendered();
+				}
+
+				/**
+     * Sets up this component to be used by this renderer. Sub classes should
+     * override as needed for more behavior.
+     * @param {!Component} component
+     */
+
+			}, {
+				key: 'setUp',
+				value: function setUp() {}
+
+				/**
+     * Updates the component's element html. This is automatically called when
+     * the value of at least one of the component's state keys has changed.
+     * Should be implemented by sub classes. Sub classes have to remember to call
+     * "informRendered" on the component when any update rendering is done.
+     * @param {!Component} component
+     * @param {Object.<string, Object>} changes Object containing the names
+     *     of all changed state keys, each mapped to an object with its new
+     *     (newVal) and previous (prevVal) values.
+     */
+
+			}, {
+				key: 'update',
+				value: function update() {}
+			}]);
+
+			return ComponentRenderer;
+		}();
+
+		exports.default = new ComponentRenderer();
+		//# sourceMappingURL=ComponentRenderer.js.map
+	}
+});
+//# sourceMappingURL=ComponentRenderer.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-component@2.16.8/lib/Component", ['module', 'exports', 'require', './events/events', 'frontend-js-metal-web$metal', './sync/sync', 'frontend-js-metal-web$metal-dom', './ComponentDataManager', './ComponentRenderer', 'frontend-js-metal-web$metal-events'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _get = function get(object, property, receiver) {
+			if (object === null) object = Function.prototype;var desc = Object.getOwnPropertyDescriptor(object, property);if (desc === undefined) {
+				var parent = Object.getPrototypeOf(object);if (parent === null) {
+					return undefined;
+				} else {
+					return get(parent, property, receiver);
+				}
+			} else if ("value" in desc) {
+				return desc.value;
+			} else {
+				var getter = desc.get;if (getter === undefined) {
+					return undefined;
+				}return getter.call(receiver);
+			}
+		};
+
+		var _events = require('./events/events');
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		var _sync = require('./sync/sync');
+
+		var _metalDom = require("frontend-js-metal-web$metal-dom");
+
+		var _ComponentDataManager = require('./ComponentDataManager');
+
+		var _ComponentDataManager2 = _interopRequireDefault(_ComponentDataManager);
+
+		var _ComponentRenderer = require('./ComponentRenderer');
+
+		var _ComponentRenderer2 = _interopRequireDefault(_ComponentRenderer);
+
+		var _metalEvents = require("frontend-js-metal-web$metal-events");
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		function _defineProperty(obj, key, value) {
+			if (key in obj) {
+				Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+			} else {
+				obj[key] = value;
+			}return obj;
+		}
+
+		function _toConsumableArray(arr) {
+			if (Array.isArray(arr)) {
+				for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+					arr2[i] = arr[i];
+				}return arr2;
+			} else {
+				return Array.from(arr);
+			}
+		}
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		function _possibleConstructorReturn(self, call) {
+			if (!self) {
+				throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+			}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+		}
+
+		function _inherits(subClass, superClass) {
+			if (typeof superClass !== "function" && superClass !== null) {
+				throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+			}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+		}
+
+		/**
+   * Component collects common behaviors to be followed by UI components, such
+   * as Lifecycle, CSS classes management, events encapsulation and support for
+   * different types of rendering.
+   * Rendering logic can be done by either:
+   *     - Listening to the `render` event inside the `created` lifecycle function
+   *       and adding the rendering logic to the listener.
+   *     - Using an existing implementation of `ComponentRenderer` like `Soy`,
+   *       and following its patterns.
+   *     - Building your own implementation of a `ComponentRenderer`.
+   * Specifying the renderer that will be used can be done by setting the RENDERER
+   * static variable to the renderer's constructor function.
+   *
+   * Example:
+   *
+   * <code>
+   * class CustomComponent extends Component {
+   *   created() {
+   *   }
+   *
+   *   rendered() {
+   *   }
+   *
+   *   willAttach() {
+   *   }
+   *
+   *   attached() {
+   *   }
+   *
+   *   willReceiveState() {
+   *   }
+   *
+   *   // willReceiveProps is only available in JSX components
+   *   willReceiveProps() {
+   *   }
+   *
+   *   shouldUpdate() {
+   *   }
+   *
+   *   willUpdate() {
+   *   }
+   *
+   *   willDetach() {
+   *   }
+   *
+   *   detached() {
+   *   }
+   *
+   *   disposed() {
+   *   }
+   * }
+   *
+   * CustomComponent.RENDERER = MyRenderer;
+   *
+   * CustomComponent.STATE = {
+   *   title: { value: 'Title' },
+   *   fontSize: { value: '10px' }
+   * };
+   * </code>
+   *
+   * @extends {State}
+   */
+		var Component = function (_EventEmitter) {
+			_inherits(Component, _EventEmitter);
+
+			/**
+    * Constructor function for `Component`.
+    * @param {Object=} config An object with the initial values for this
+    *     component's state.
+    * @param {boolean|string|Element=} parentElement The element where the
+    *     component should be rendered. Can be given as a selector or an element.
+    *     If `false` is passed, the component won't be rendered automatically
+    *     after created.
+    * @constructor
+    */
+			function Component(config, parentElement) {
+				_classCallCheck(this, Component);
+
+				/**
+     * Instance of `DomEventEmitterProxy` which proxies events from the component's
+     * element to the component itself.
+     * @type {!DomEventEmitterProxy}
+     * @protected
+     */
+				var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this));
+
+				_this.elementEventProxy_ = new _metalDom.DomEventEmitterProxy(null, _this, proxyBlackList_);
+
+				/**
+     * The `EventHandler` instance for events attached from the `events` state key.
+     * @type {EventHandler}
+     * @protected
+     */
+				_this.eventsStateKeyHandler_ = null;
+
+				/**
+     * Stores the pending callback function for when `forceUpdate` is used
+     * to trigger a rerender.
+     * @type {?function}
+     */
+				_this.forceUpdateCallback_ = null;
+
+				/**
+     * Whether the element is in document.
+     * @type {boolean}
+     */
+				_this.inDocument = false;
+
+				/**
+     * The initial config option passed to this constructor.
+     * @type {!Object}
+     * @protected
+     */
+				_this.initialConfig_ = config || {};
+
+				/**
+     * Indicates whether the component should be rendered as a Portal, outside
+     * of the parent component.
+     * @type {string|Element|boolean}
+     */
+				_this.portalElement = null;
+
+				/**
+     * Whether the element was rendered.
+     * @type {boolean}
+     */
+				_this.wasRendered = false;
+
+				/**
+     * The component's element will be appended to the element this variable is
+     * set to, unless the user specifies another parent when calling `render` or
+     * `attach`.
+     * @type {!Element}
+     */
+				_this.DEFAULT_ELEMENT_PARENT = typeof document !== 'undefined' ? document.body : null;
+
+				_this.setShouldUseFacade(true);
+				_this.element = _this.initialConfig_.element;
+
+				_this.setUpRenderer_();
+				_this.setUpDataManager_();
+				_this.setUpSyncUpdates_();
+
+				_this.setUpPortal_(_this.initialConfig_.portalElement);
+
+				_this.on('stateWillChange', _this.handleStateWillChange_);
+				_this.on('stateChanged', _this.handleComponentStateChanged_);
+				_this.on('eventsChanged', _this.onEventsChanged_);
+				_this.addListenersFromObj_(_this.dataManager_.get(_this, 'events'));
+
+				_this.created();
+				_this.componentCreated_ = true;
+				if (parentElement !== false) {
+					_this.renderComponent(parentElement);
+				}
+				return _this;
+			}
+
+			/**
+    * Getter logic for the element property.
+    * @return {Element}
+    */
+
+			_createClass(Component, [{
+				key: 'addListenersFromObj_',
+
+				/**
+     * Adds the listeners specified in the given object.
+     * @param {!Object} obj
+     * @protected
+     */
+				value: function addListenersFromObj_(obj) {
+					var _eventsStateKeyHandle;
+
+					if (!this.eventsStateKeyHandler_) {
+						this.eventsStateKeyHandler_ = new _metalEvents.EventHandler();
+					}
+					var handles = (0, _events.addListenersFromObj)(this, obj);
+					(_eventsStateKeyHandle = this.eventsStateKeyHandler_).add.apply(_eventsStateKeyHandle, _toConsumableArray(handles));
+				}
+
+				/**
+     * Invokes the attached Lifecycle. When attached, the component element is
+     * appended to the DOM and any other action to be performed must be
+     * implemented in this method, such as, binding DOM events. A component can
+     * be re-attached multiple times.
+     * @param {(string|Element)=} parentElement Optional parent element
+     *     to render the component.
+     * @param {(string|Element)=} siblingElement Optional sibling element
+     *     to render the component before it. Relevant when the component needs
+     *     to be rendered before an existing element in the DOM.
+     * @protected
+     * @chainable
+     * @return {Component}
+     */
+
+			}, {
+				key: 'attach',
+				value: function attach(parentElement, siblingElement) {
+					if (!this.inDocument) {
+						this.emit('willAttach');
+						this.willAttach();
+						this.attachElement(parentElement, siblingElement);
+						this.inDocument = true;
+						this.attachData_ = {
+							parent: parentElement,
+							sibling: siblingElement
+						};
+						this.emit('attached', this.attachData_);
+						this.attached();
+					}
+					return this;
+				}
+
+				/**
+     * Lifecycle. When attached, the component element is appended to the DOM
+     * and any other action to be performed must be implemented in this method,
+     * such as, binding DOM events. A component can be re-attached multiple
+     * times, therefore the undo behavior for any action performed in this phase
+     * must be implemented on the detach phase.
+     */
+
+			}, {
+				key: 'attached',
+				value: function attached() {}
+
+				/**
+     * Attaches the component element into the DOM.
+     * @param {(string|Element)=} parentElement Optional parent element
+     *     to render the component.
+     * @param {(string|Element)=} siblingElement Optional sibling element
+     *     to render the component before it. Relevant when the component needs
+     *     to be rendered before an existing element in the DOM, e.g.
+     *     `component.attach(null, existingElement)`.
+     */
+
+			}, {
+				key: 'attachElement',
+				value: function attachElement(parentElement, siblingElement) {
+					var element = this.element;
+					if (element && (siblingElement || !element.parentNode)) {
+						var parent = (0, _metalDom.toElement)(parentElement) || this.DEFAULT_ELEMENT_PARENT; // eslint-disable-line
+						parent.insertBefore(element, (0, _metalDom.toElement)(siblingElement));
+					}
+				}
+
+				/**
+     * Lifecycle. This is called when the component has just been created, before
+     * it's rendered.
+     */
+
+			}, {
+				key: 'created',
+				value: function created() {}
+
+				/**
+     * Listens to a delegate event on the component's element.
+     * @param {string} eventName The name of the event to listen to.
+     * @param {string} selector The selector that matches the child elements that
+     *   the event should be triggered for.
+     * @param {!function(!Object)} callback Function to be called when the event is
+     *   triggered. It will receive the normalized event object.
+     * @return {!EventHandle} Can be used to remove the listener.
+     */
+
+			}, {
+				key: 'delegate',
+				value: function delegate(eventName, selector, callback) {
+					return this.on('delegate:' + eventName + ':' + selector, callback);
+				}
+
+				/**
+     * Invokes the detached Lifecycle. When detached, the component element is
+     * removed from the DOM and any other action to be performed must be
+     * implemented in this method, such as, unbinding DOM events. A component
+     * can be detached multiple times.
+     * @chainable
+     * @return {Component}
+     */
+
+			}, {
+				key: 'detach',
+				value: function detach() {
+					if (this.inDocument) {
+						this.emit('willDetach');
+						this.willDetach();
+						if (this.element && this.element.parentNode) {
+							this.element.parentNode.removeChild(this.element);
+						}
+						this.inDocument = false;
+						this.detached();
+					}
+					this.emit('detached');
+					return this;
+				}
+
+				/**
+     * Lifecycle. When detached, the component element is removed from the DOM
+     * and any other action to be performed must be implemented in this method,
+     * such as, unbinding DOM events. A component can be detached multiple
+     * times, therefore the undo behavior for any action performed in this phase
+     * must be implemented on the attach phase.
+     */
+
+			}, {
+				key: 'detached',
+				value: function detached() {}
+
+				/**
+     * Lifecycle. Called when the component is disposed. Should be overridden by
+     * sub classes to dispose of any internal data or events.
+     */
+
+			}, {
+				key: 'disposed',
+				value: function disposed() {}
+
+				/**
+     * @inheritDoc
+     */
+
+			}, {
+				key: 'disposeInternal',
+				value: function disposeInternal() {
+					this.detach();
+					this.disposed();
+					this.emit('disposed');
+
+					this.elementEventProxy_.dispose();
+					this.elementEventProxy_ = null;
+
+					this.dataManager_.dispose(this);
+					this.dataManager_ = null;
+
+					this.renderer_.dispose(this);
+					this.renderer_ = null;
+
+					_get(Component.prototype.__proto__ || Object.getPrototypeOf(Component.prototype), 'disposeInternal', this).call(this);
+				}
+
+				/**
+     * Forces an update that ignores the `shouldUpdate` lifecycle method for
+     * components whose render depends on external variables.
+     * @param {function()} callback
+     */
+
+			}, {
+				key: 'forceUpdate',
+				value: function forceUpdate(callback) {
+					this.forceUpdateCallback_ = callback;
+
+					this.updateRenderer_({
+						forceUpdate: true
+					});
+				}
+
+				/**
+     * Gets data about where this component was attached at.
+     * @return {!Object}
+     */
+
+			}, {
+				key: 'getAttachData',
+				value: function getAttachData() {
+					return this.attachData_;
+				}
+
+				/**
+     * Gets the `ComponentDataManager` being used.
+     * @return {!ComponentDataManager}
+     */
+
+			}, {
+				key: 'getDataManager',
+				value: function getDataManager() {
+					return this.dataManager_;
+				}
+
+				/**
+     * Gets the configuration object that was passed to this component's constructor.
+     * @return {!Object}
+     */
+
+			}, {
+				key: 'getInitialConfig',
+				value: function getInitialConfig() {
+					return this.initialConfig_;
+				}
+
+				/**
+     * Gets portalElement based on selector. If an id is passed and the element
+     * does not exist, the element is created with that id and appended to the body.
+     *
+     * @param {string|Element} portalElementSelector
+     * @return {?Element}
+     */
+
+			}, {
+				key: 'getPortalElement_',
+				value: function getPortalElement_(portalElementSelector) {
+					var portalElement = (0, _metalDom.toElement)(portalElementSelector);
+
+					if (portalElement) {
+						return portalElement;
+					}
+
+					if (portalElementSelector.indexOf('#') === 0 && portalElementSelector.indexOf(' ') === -1) {
+						portalElement = document.createElement('div');
+						portalElement.setAttribute('id', portalElementSelector.slice(1));
+
+						(0, _metalDom.enterDocument)(portalElement);
+					}
+
+					return portalElement;
+				}
+
+				/**
+     * Gets state data for this component.
+     * @return {!Object}
+     */
+
+			}, {
+				key: 'getState',
+				value: function getState() {
+					return this.dataManager_.getState(this);
+				}
+
+				/**
+     * Gets the keys for the state data.
+     * @return {!Array<string>}
+     */
+
+			}, {
+				key: 'getStateKeys',
+				value: function getStateKeys() {
+					return this.dataManager_.getStateKeys(this);
+				}
+
+				/**
+     * Gets the `ComponentRenderer` instance being used.
+     * @return {!ComponentRenderer}
+     */
+
+			}, {
+				key: 'getRenderer',
+				value: function getRenderer() {
+					return this.renderer_;
+				}
+
+				/**
+     * Handles a change in the component's element.
+     * @param {Element} prevVal
+     * @param {Element} newVal
+     * @protected
+     */
+
+			}, {
+				key: 'handleComponentElementChanged_',
+				value: function handleComponentElementChanged_(prevVal, newVal) {
+					this.elementEventProxy_.setOriginEmitter(newVal);
+					if (this.componentCreated_) {
+						this.emit('elementChanged', {
+							prevVal: prevVal,
+							newVal: newVal
+						});
+						if (newVal && this.wasRendered) {
+							this.syncVisible(this.dataManager_.get(this, 'visible'));
+						}
+					}
+				}
+
+				/**
+     * Handles state batch changes. Calls any existing `sync` functions that
+     * match the changed state keys.
+     * @param {Event} event
+     * @protected
+     */
+
+			}, {
+				key: 'handleComponentStateChanged_',
+				value: function handleComponentStateChanged_(event) {
+					if (!this.hasSyncUpdates()) {
+						this.updateRenderer_(event);
+					}
+					(0, _sync.syncState)(this, event.changes);
+					this.emit('stateSynced', event);
+				}
+
+				/**
+     * Handles a `stateKeyChanged` event. This is only called for components that
+     * have requested updates to happen synchronously.
+     * @param {!{key: string, newVal: *, prevVal: *}} data
+     * @protected
+     */
+
+			}, {
+				key: 'handleComponentStateKeyChanged_',
+				value: function handleComponentStateKeyChanged_(data) {
+					this.updateRenderer_({
+						changes: _defineProperty({}, data.key, data)
+					});
+				}
+
+				/**
+     * Fires before state batch changes. Provides hook point for modifying
+     *     state.
+     * @param {Event} event
+     * @protected
+     */
+
+			}, {
+				key: 'handleStateWillChange_',
+				value: function handleStateWillChange_(event) {
+					this.willReceiveState(event.changes);
+				}
+
+				/**
+     * Checks if this component has sync updates enabled.
+     * @return {boolean}
+     */
+
+			}, {
+				key: 'hasSyncUpdates',
+				value: function hasSyncUpdates() {
+					return this.syncUpdates_;
+				}
+
+				/**
+     * Informs that the component that the rendered has finished rendering it. The
+     * renderer is the one responsible for calling this when appropriate. This
+     * will emit events and run the appropriate lifecycle for the first render.
+     */
+
+			}, {
+				key: 'informRendered',
+				value: function informRendered() {
+					var firstRender = !this.hasRendererRendered_;
+					this.hasRendererRendered_ = true;
+
+					if (this.forceUpdateCallback_) {
+						this.forceUpdateCallback_();
+						this.forceUpdateCallback_ = null;
+					}
+
+					this.rendered(firstRender);
+					this.emit('rendered', firstRender);
+				}
+
+				/**
+     * Informs the component that the renderer is about to update. Calls the
+     * component's `willUpdate` lifecycle method.
+     * @param {Object} changes
+     */
+
+			}, {
+				key: 'informWillUpdate',
+				value: function informWillUpdate() {
+					this.willUpdate.apply(this, arguments);
+				}
+
+				/**
+     * Checks if the given function is a component constructor.
+     * @param {!function()} fn Any function
+     * @return {boolean}
+     */
+
+			}, {
+				key: 'mergeElementClasses_',
+
+				/**
+     * Merges two values for the ELEMENT_CLASSES property into a single one.
+     * @param {string} class1
+     * @param {string} class2
+     * @return {string} The merged value.
+     * @protected
+     */
+				value: function mergeElementClasses_(class1, class2) {
+					return class1 ? class1 + ' ' + (class2 || '') : class2;
+				}
+
+				/**
+     * Fired when the `events` state value is changed.
+     * @param {!Object} event
+     * @protected
+     */
+
+			}, {
+				key: 'onEventsChanged_',
+				value: function onEventsChanged_(event) {
+					this.eventsStateKeyHandler_.removeAllListeners();
+					this.addListenersFromObj_(event.newVal);
+				}
+
+				/**
+     * Creates and renders a component for the given constructor function. This
+     * will always make sure that the constructor runs without rendering the
+     * component, having the `render` step happen only after it has finished.
+     * @param {!function()} Ctor The component's constructor function.
+     * @param {Object|Element=} configOrElement Optional config data or parent
+     *     for the component.
+     * @param {Element=} element Optional parent for the component.
+     * @return {!Component} The rendered component's instance.
+     */
+
+			}, {
+				key: 'renderComponent',
+
+				/**
+     * Renders the component into the DOM via its `ComponentRenderer`. Stores the
+     * given parent element to be used when the renderer is done (`informRendered`).
+     * @param {(string|Element|boolean)=} parentElement Optional parent element
+     *     to render the component. If set to `false`, the element won't be
+     *     attached to any element after rendering. In this case, `attach` should
+     *     be called manually later to actually attach it to the dom.
+     */
+				value: function renderComponent(parentElement) {
+					if (!this.hasRendererRendered_) {
+						if (!(0, _metal.isServerSide)() && window.__METAL_DEV_TOOLS_HOOK__) {
+							window.__METAL_DEV_TOOLS_HOOK__(this);
+						}
+						this.getRenderer().render(this);
+					}
+					this.emit('render');
+					(0, _sync.syncState)(this);
+					this.attach(parentElement);
+					this.wasRendered = true;
+				}
+
+				/**
+     * Setter logic for the element property.
+     * @param {?string|Element} val
+     */
+
+			}, {
+				key: 'setState',
+
+				/**
+     * Sets the value of all the specified state keys.
+     * @param {!Object.<string,*>} state A map of state keys to the values they
+     *   should be set to.
+     * @param {function()=} callback An optional function that will be run
+     *   after the next batched update is triggered.
+     */
+				value: function setState(state, callback) {
+					this.dataManager_.setState(this, state, callback);
+				}
+
+				/**
+     * Setter for the `elementClasses` data property. Appends given value with
+     * the one specified in `ELEMENT_CLASSES`.
+     * @param {string} val
+     * @return {string}
+     * @protected
+     */
+
+			}, {
+				key: 'setterElementClassesFn_',
+				value: function setterElementClassesFn_(val) {
+					var elementClasses = (0, _metal.getStaticProperty)(this.constructor, 'ELEMENT_CLASSES', this.mergeElementClasses_);
+					if (elementClasses) {
+						val += ' ' + elementClasses;
+					}
+					return val.trim();
+				}
+
+				/**
+     * Sets up the component's data manager.
+     * @protected
+     */
+
+			}, {
+				key: 'setUpDataManager_',
+				value: function setUpDataManager_() {
+					this.dataManager_ = (0, _metal.getStaticProperty)(this.constructor, 'DATA_MANAGER');
+					this.dataManager_.setUp(this, _metal.object.mixin({}, this.renderer_.getExtraDataConfig(this), Component.DATA) // eslint-disable-line
+					);
+				}
+
+				/**
+     * Overwrites element property if portalElement is passed. Creates
+     * a nested placeholder so that portalElement is not removed from the
+     * DOM when component first renders. When portalElement is equal to true,
+     * component is appeneded to the body.
+     *
+     * @param {string|Element|boolean} portalElement
+     */
+
+			}, {
+				key: 'setUpPortal_',
+				value: function setUpPortal_(portalElement) {
+					if (!portalElement || !(0, _metal.isElement)(portalElement) && !(0, _metal.isString)(portalElement) && !(0, _metal.isBoolean)(portalElement)) {
+						return;
+					} else if ((0, _metal.isBoolean)(portalElement) && portalElement) {
+						portalElement = 'body';
+					}
+
+					if ((0, _metal.isServerSide)()) {
+						this.portalElement = true;
+						return;
+					}
+
+					portalElement = this.getPortalElement_(portalElement);
+
+					if (portalElement) {
+						var placeholder = document.createElement('div');
+
+						portalElement.appendChild(placeholder);
+
+						this.element = placeholder;
+						this.portalElement = portalElement;
+					}
+				}
+
+				/**
+     * Sets up the component's renderer.
+     * @protected
+     */
+
+			}, {
+				key: 'setUpRenderer_',
+				value: function setUpRenderer_() {
+					this.renderer_ = (0, _metal.getStaticProperty)(this.constructor, 'RENDERER');
+					this.renderer_.setUp(this);
+				}
+
+				/**
+     * Sets up the component to use sync updates when `SYNC_UPDATES` is `true`.
+     * @protected
+     */
+
+			}, {
+				key: 'setUpSyncUpdates_',
+				value: function setUpSyncUpdates_() {
+					this.syncUpdates_ = (0, _metal.getStaticProperty)(this.constructor, 'SYNC_UPDATES');
+					if (this.hasSyncUpdates()) {
+						this.on('stateKeyChanged', this.handleComponentStateKeyChanged_.bind(this));
+					}
+				}
+
+				/**
+     * Skips renderer updates until `stopSkipUpdates` is called.
+     */
+
+			}, {
+				key: 'startSkipUpdates',
+				value: function startSkipUpdates() {
+					this.skipUpdates_ = true;
+				}
+
+				/**
+     * Stops skipping renderer updates.
+     */
+
+			}, {
+				key: 'stopSkipUpdates',
+				value: function stopSkipUpdates() {
+					this.skipUpdates_ = false;
+				}
+
+				/**
+     * State synchronization logic for `visible` state key.
+     * Updates the element's display value according to its visibility.
+     * @param {boolean} newVal
+     */
+
+			}, {
+				key: 'syncVisible',
+				value: function syncVisible(newVal) {
+					if (this.element) {
+						this.element.style.display = newVal ? '' : 'none';
+					}
+				}
+
+				/**
+     * Lifecycle. Called whenever the component has just been rendered.
+     * @param {boolean} firstRender Flag indicating if this was the component's
+     *     first render.
+     */
+
+			}, {
+				key: 'rendered',
+				value: function rendered() {}
+
+				/**
+     * Calls "update" on the renderer, passing it the changed data.
+     * @param {!{changes: !Object}} data
+     * @protected
+     */
+
+			}, {
+				key: 'updateRenderer_',
+				value: function updateRenderer_(data) {
+					if (!data.forceUpdate) {
+						this.forceUpdateCallback_ = null;
+					}
+
+					if (!this.skipUpdates_ && this.hasRendererRendered_) {
+						this.getRenderer().update(this, data);
+					}
+				}
+
+				/**
+     * Validator logic for the `events` state key.
+     * @param {Object} val
+     * @return {boolean}
+     * @protected
+     */
+
+			}, {
+				key: 'validatorEventsFn_',
+				value: function validatorEventsFn_(val) {
+					return !(0, _metal.isDefAndNotNull)(val) || (0, _metal.isObject)(val);
+				}
+
+				/**
+     * Lifecycle. Fires before the component has been attached to the DOM.
+     */
+
+			}, {
+				key: 'willAttach',
+				value: function willAttach() {}
+
+				/**
+     * Lifecycle. Fires before component is detached from the DOM.
+     */
+
+			}, {
+				key: 'willDetach',
+				value: function willDetach() {}
+
+				/**
+     * Lifecycle. Called when the component is about to receive state changes.
+     * Provides a hook point for modifying state that can be used in the next
+     * rerender.
+     * @param {Object} changes Changes made to this.state
+     */
+
+			}, {
+				key: 'willReceiveState',
+				value: function willReceiveState() {}
+
+				/**
+     * Lifecycle. Called when the component's renderer is about to update.
+     * @param {Object} changes
+     */
+
+			}, {
+				key: 'willUpdate',
+				value: function willUpdate() {}
+			}, {
+				key: 'element',
+				get: function get() {
+					return this.elementValue_;
+				},
+				set: function set(val) {
+					if (!(0, _metal.isElement)(val) && !(0, _metal.isString)(val) && (0, _metal.isDefAndNotNull)(val)) {
+						return;
+					}
+
+					if (val) {
+						val = (0, _metalDom.toElement)(val) || this.elementValue_;
+					}
+
+					if (this.elementValue_ !== val) {
+						var prev = this.elementValue_;
+						this.elementValue_ = val;
+						this.handleComponentElementChanged_(prev, val);
+					}
+				}
+			}], [{
+				key: 'isComponentCtor',
+				value: function isComponentCtor(fn) {
+					return fn.prototype && fn.prototype[Component.COMPONENT_FLAG];
+				}
+			}, {
+				key: 'render',
+				value: function render(Ctor, configOrElement, element) {
+					var config = configOrElement;
+					if ((0, _metal.isElement)(configOrElement)) {
+						config = null;
+						element = configOrElement;
+					}
+					var instance = new Ctor(config, false);
+					instance.renderComponent(element);
+					return instance;
+				}
+
+				/**
+     * Creates and renders a component for the given constructor function as
+     * string. This will always make sure that the constructor runs without
+     * rendering the component, having the `render` step happen only after it
+     * has finished.
+     * @param {!function()} Ctor The component's constructor function.
+     * @param {Object|Element=} configOrElement Optional config data or
+     *     parent for the component.
+     * @return {!String} The rendered component's content as string.
+     */
+
+			}, {
+				key: 'renderToString',
+				value: function renderToString(Ctor, configOrElement) {
+					var rendererName = Ctor.RENDERER && Ctor.RENDERER.RENDERER_NAME;
+					switch (rendererName) {
+						case 'jsx':
+						case 'soy':
+						case 'incremental-dom':
+							{
+								if (typeof IncrementalDOM === 'undefined') {
+									throw new Error('Error. Trying to render incremental dom ' + 'based component to string requires IncrementalDOM ' + 'implementation to be loaded.');
+								}
+								// Incremental dom patches for components or nested components are
+								// isolated inside the component element. The following code intercepts
+								// incremental dom patches and collect results into temporary stack in
+								// order to successfully collect the final string of the outermost
+								// component after all nested components stack rendered.
+								var interceptedComponentStrings = [];
+								var patch = IncrementalDOM.patch;
+								var patchInterceptor = function patchInterceptor() {
+									var currentElement = patch.apply(undefined, arguments);
+									interceptedComponentStrings.push(currentElement.innerHTML);
+									IncrementalDOM.patch = patch;
+								};
+								IncrementalDOM.patch = patchInterceptor;
+								Component.render(Ctor, configOrElement).dispose();
+								return interceptedComponentStrings[0];
+							}
+						default:
+							throw new Error('Error. Trying to render non incremental dom ' + 'based component to string.');
+					}
+				}
+			}]);
+
+			return Component;
+		}(_metalEvents.EventEmitter);
+
+		/**
+   * Component data definition.
+   * @type {Object}
+   * @static
+   */
+
+		Component.DATA = {
+			/**
+    * Objects describing children elements that were passed to be rendered inside
+    * this component.
+    * @type {!Array<!Object>}
+    */
+			children: {
+				validator: Array.isArray,
+				value: []
+			},
+
+			/**
+    * CSS classes to be applied to the element.
+    * @type {string}
+    */
+			elementClasses: {
+				setter: 'setterElementClassesFn_',
+				validator: _metal.isString,
+				value: ''
+			},
+
+			/**
+    * Listeners that should be attached to this component. Should be provided as
+    * an object, where the keys are event names and the values are the listener
+    * functions (or function names).
+    * @type {Object<string, (function()|string|{selector: string, fn: function()|string})>}
+    */
+			events: {
+				validator: 'validatorEventsFn_',
+				value: null
+			},
+
+			/**
+    * Indicates if the component is visible or not.
+    * @type {boolean}
+    */
+			visible: {
+				validator: _metal.isBoolean,
+				value: true
+			}
+		};
+
+		/**
+   * Name of the flag used to identify component constructors via their prototype.
+   * @type {string}
+   */
+		Component.COMPONENT_FLAG = '__metal_component__';
+
+		/**
+   * The `ComponentDataManager` class that should be used. This class will be
+   * responsible for handling the component's data. Each component may have its
+   * own implementation.
+   * @type {!ComponentDataManager}
+   */
+		Component.DATA_MANAGER = _ComponentDataManager2.default;
+
+		/**
+   * CSS classes to be applied to the element.
+   * @type {string}
+   */
+		Component.ELEMENT_CLASSES = '';
+
+		/**
+   * The `ComponentRenderer` that should be used. Components need to set this
+   * to a subclass of `ComponentRenderer` that has the rendering logic, like
+   * `SoyRenderer`.
+   * @type {!ComponentRenderer}
+   */
+		Component.RENDERER = _ComponentRenderer2.default;
+
+		/**
+   * Flag indicating if component updates will happen synchronously. Updates are
+   * done asynchronously by default, which allows changes to be batched and
+   * applied together.
+   * @type {boolean}
+   */
+		Component.SYNC_UPDATES = false;
+
+		/**
+   * Sets a prototype flag to easily determine if a given constructor is for
+   * a component or not.
+   */
+		Component.prototype[Component.COMPONENT_FLAG] = true;
+
+		var proxyBlackList_ = {
+			eventsChanged: true,
+			stateChanged: true,
+			stateKeyChanged: true
+		};
+
+		exports.default = Component;
+		//# sourceMappingURL=Component.js.map
+	}
+});
+//# sourceMappingURL=Component.js.map
+'use strict';
+
+Liferay.Loader.define("frontend-js-metal-web$metal-component@2.16.8/lib/ComponentRegistry", ['module', 'exports', 'require', 'frontend-js-metal-web$metal'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+
+		var _createClass = function () {
+			function defineProperties(target, props) {
+				for (var i = 0; i < props.length; i++) {
+					var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+				}
+			}return function (Constructor, protoProps, staticProps) {
+				if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+			};
+		}();
+
+		var _metal = require("frontend-js-metal-web$metal");
+
+		function _classCallCheck(instance, Constructor) {
+			if (!(instance instanceof Constructor)) {
+				throw new TypeError("Cannot call a class as a function");
+			}
+		}
+
+		/**
+   * The component registry is used to register components, so they can
+   * be accessible by name.
+   * @type {Object}
+   */
+		var ComponentRegistry = function () {
+			function ComponentRegistry() {
+				_classCallCheck(this, ComponentRegistry);
+			}
+
+			_createClass(ComponentRegistry, null, [{
+				key: 'getConstructor',
+
+				/**
+     * Gets the constructor function for the given component name, or
+     * undefined if it hasn't been registered yet.
+     * @param {string} name The component's name.
+     * @return {?function()}
+     * @static
+     */
+				value: function getConstructor(name) {
+					var constructorFn = ComponentRegistry.components_[name];
+					if (!constructorFn) {
+						console.error('There\'s no constructor registered for the component named ' + name + '.\n\t\t\t\tComponents need to be registered via ComponentRegistry.register.');
+					}
+					return constructorFn;
+				}
+
+				/**
+     * Registers a component, so it can be found by its name.
+     * @param {!Function} constructorFn The component's constructor function.
+     * @param {string=} name Name of the registered component. If none is given
+     *   the name defined by the NAME static variable will be used instead. If that
+     *   isn't set as well, the name of the constructor function will be used.
+     * @static
+     */
+
+			}, {
+				key: 'register',
+				value: function register(constructorFn, name) {
+					if (!name) {
+						if (constructorFn.hasOwnProperty('NAME')) {
+							name = constructorFn.NAME;
+						} else {
+							name = (0, _metal.getFunctionName)(constructorFn);
+						}
+					}
+					constructorFn.NAME = name;
+					ComponentRegistry.components_[name] = constructorFn;
+				}
+			}]);
+
+			return ComponentRegistry;
+		}();
+
+		/**
+   * Holds all registered components, indexed by their names.
+   * @type {!Object<string, function()>}
+   * @protected
+   * @static
+   */
+
+		ComponentRegistry.components_ = {};
+
+		exports.default = ComponentRegistry;
+		//# sourceMappingURL=ComponentRegistry.js.map
+	}
+});
+//# sourceMappingURL=ComponentRegistry.js.map
+'use strict';
+
+Liferay.Loader.define('frontend-js-metal-web$metal-component@2.16.8/lib/all/component', ['module', 'exports', 'require', '../events/events', '../Component', '../ComponentDataManager', '../ComponentRegistry', '../ComponentRenderer'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		Object.defineProperty(exports, "__esModule", {
+			value: true
+		});
+		exports.ComponentRenderer = exports.ComponentRegistry = exports.ComponentDataManager = exports.Component = undefined;
+
+		var _events = require('../events/events');
+
+		Object.keys(_events).forEach(function (key) {
+			if (key === "default" || key === "__esModule") return;
+			Object.defineProperty(exports, key, {
+				enumerable: true,
+				get: function get() {
+					return _events[key];
+				}
+			});
+		});
+
+		var _Component = require('../Component');
+
+		var _Component2 = _interopRequireDefault(_Component);
+
+		var _ComponentDataManager = require('../ComponentDataManager');
+
+		var _ComponentDataManager2 = _interopRequireDefault(_ComponentDataManager);
+
+		var _ComponentRegistry = require('../ComponentRegistry');
+
+		var _ComponentRegistry2 = _interopRequireDefault(_ComponentRegistry);
+
+		var _ComponentRenderer = require('../ComponentRenderer');
+
+		var _ComponentRenderer2 = _interopRequireDefault(_ComponentRenderer);
+
+		function _interopRequireDefault(obj) {
+			return obj && obj.__esModule ? obj : { default: obj };
+		}
+
+		exports.default = _Component2.default;
+		exports.Component = _Component2.default;
+		exports.ComponentDataManager = _ComponentDataManager2.default;
+		exports.ComponentRegistry = _ComponentRegistry2.default;
+		exports.ComponentRenderer = _ComponentRenderer2.default;
+		//# sourceMappingURL=component.js.map
+	}
+});
+//# sourceMappingURL=component.js.map
+Liferay.Loader.define("frontend-js-web@4.0.38/liferay/PortletBase.es", ['module', 'exports', 'require', 'frontend-js-metal-web$metal', 'frontend-js-metal-web$metal-component', 'frontend-js-metal-web$metal-dom', './util/form/object_to_form_data.es'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _metal = _interopRequireDefault(require("frontend-js-metal-web$metal"));
+
+    var _metalComponent = _interopRequireDefault(require("frontend-js-metal-web$metal-component"));
+
+    var _metalDom = _interopRequireDefault(require("frontend-js-metal-web$metal-dom"));
+
+    var _object_to_form_data = _interopRequireDefault(require("./util/form/object_to_form_data.es"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    function _classCallCheck(instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+      }
+    }
+
+    function _defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    function _createClass(Constructor, protoProps, staticProps) {
+      if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;
+    }
+
+    function _possibleConstructorReturn(self, call) {
+      if (call && (_typeof(call) === "object" || typeof call === "function")) {
+        return call;
+      }return _assertThisInitialized(self);
+    }
+
+    function _assertThisInitialized(self) {
+      if (self === void 0) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }return self;
+    }
+
+    function _getPrototypeOf(o) {
+      _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+      };return _getPrototypeOf(o);
+    }
+
+    function _inherits(subClass, superClass) {
+      if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function");
+      }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });if (superClass) _setPrototypeOf(subClass, superClass);
+    }
+
+    function _setPrototypeOf(o, p) {
+      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;return o;
+      };return _setPrototypeOf(o, p);
+    }
+
+    /**
+     * Provides helper functions that simplify querying the DOM for elements related
+     * to a specific portlet.
+     *
+     * @abstract
+     * @extends {Component}
+     */
+    var PortletBase = /*#__PURE__*/function (_Component) {
+      _inherits(PortletBase, _Component);
+
+      function PortletBase() {
+        _classCallCheck(this, PortletBase);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(PortletBase).apply(this, arguments));
+      }
+
+      _createClass(PortletBase, [{
+        key: "all",
+
+        /**
+         * Returns a Node List containing all the matching element nodes within the
+         * subtrees of the root object, in tree order. If there are no matching
+         * nodes, the method returns an empty Node List.
+         *
+         * @param  {string} selectors A list of one or more CSS relative selectors.
+         * @param  {(string|Element|Document)=} root The root node of the search. If
+         *         not specified, the element search will start in the portlet's
+         *         root node or in the document.
+         * @return {NodeList<Element>} A list of elements matching the selectors, in
+         *         tree order.
+         */
+        value: function all(selectors, root) {
+          root = _metalDom.default.toElement(root) || this.rootNode || document;
+          return root.querySelectorAll(this.namespaceSelectors_(this.portletNamespace || this.namespace, selectors));
+        }
+        /**
+         * Performs an HTTP POST request to the given URL with the given body.
+         *
+         * @deprecated As of Athanasius (7.3.x), replaced by `Liferay.Util.fetch`.
+         * @param      {!string} url The URL to send the post request to.
+         * @param      {!Object|!FormData} body The request body.
+         * @return     {Promise} A promise.
+         */
+
+      }, {
+        key: "fetch",
+        value: function (_fetch) {
+          function fetch(_x, _x2) {
+            return _fetch.apply(this, arguments);
+          }
+
+          fetch.toString = function () {
+            return _fetch.toString();
+          };
+
+          return fetch;
+        }(function (url, body) {
+          var requestBody = this.getRequestBody_(body); // eslint-disable-next-line @liferay/portal/no-global-fetch
+
+          return fetch(url, {
+            body: requestBody,
+            credentials: 'include',
+            method: 'POST'
+          });
+        })
+        /**
+         * Transforms the given body into a valid <code>FormData</code> element.
+         *
+         * @param  {!FormData|!HTMLFormElement|!Object} body The original data.
+         * @return {FormData} The transformed form data.
+         */
+
+      }, {
+        key: "getRequestBody_",
+        value: function getRequestBody_(body) {
+          var requestBody;
+
+          if (body instanceof FormData) {
+            requestBody = body;
+          } else if (body instanceof HTMLFormElement) {
+            requestBody = new FormData(body);
+          } else if (_typeof(body) === 'object') {
+            requestBody = (0, _object_to_form_data.default)(this.ns(body));
+          } else {
+            requestBody = body;
+          }
+
+          return requestBody;
+        }
+        /**
+         * Namespaces the list of selectors, appending the portlet namespace to the
+         * selectors of type ID. Selectors of other types remain unaltered.
+         *
+         * @param {string} namespace The portlet's namespace.
+         * @param {string} selectors A list of one or more CSS relative selectors.
+         * @protected
+         * @return {string} The namespaced ID selectors.
+         */
+
+      }, {
+        key: "namespaceSelectors_",
+        value: function namespaceSelectors_(namespace, selectors) {
+          return selectors.replace(new RegExp('(#|\\[id=(\\"|\\\'))(?!' + namespace + ')', 'g'), '$1' + namespace);
+        }
+        /**
+         * Appends the portlet's namespace to the given string or object properties.
+         *
+         * @param  {!Object|string} obj The object or string to namespace.
+         * @return {Object|string} An object with its properties namespaced, using
+         *         the portlet namespace or a namespaced string.
+         */
+
+      }, {
+        key: "ns",
+        value: function ns(obj) {
+          return Liferay.Util.ns(this.portletNamespace || this.namespace, obj);
+        }
+        /**
+         * Returns the first matching Element node within the subtrees of the
+         * root object. If there is no matching Element, the method returns null.
+         *
+         * @param  {string} selectors A list of one or more CSS relative selectors.
+         * @param  {(string|Element|Document)=} root The root node of the search. If
+         *         not specified, the element search will start in the portlet's
+         *         root node or in the document.
+         * @return {Element|null} A list of the first element matching the selectors
+         *         or <code>null</code>.
+         */
+
+      }, {
+        key: "one",
+        value: function one(selectors, root) {
+          root = _metalDom.default.toElement(root) || this.rootNode || document;
+          return root.querySelector(this.namespaceSelectors_(this.portletNamespace || this.namespace, selectors));
+        }
+        /**
+         * Returns the default portlet root node element. By default, this is the
+         * element with ID <code>p_p_id{portletNamespace}</code>.
+         *
+         * @protected
+         * @return {Element} The portlet's default root node element.
+         */
+
+      }, {
+        key: "rootNodeValueFn_",
+        value: function rootNodeValueFn_() {
+          return _metalDom.default.toElement("#p_p_id".concat(this.portletNamespace || this.namespace));
+        }
+      }]);
+
+      return PortletBase;
+    }(_metalComponent.default);
+    /**
+     * State definition.
+     *
+     * @ignore
+     * @static
+     * @type {!Object}
+     */
+
+    PortletBase.STATE = {
+      /**
+       * Portlet's namespace.
+       *
+       * @deprecated As of Judson (7.1.x)
+       * @instance
+       * @memberof PortletBase
+       * @type {string}
+       */
+      namespace: {
+        validator: _metal.default.isString
+      },
+
+      /**
+       * Portlet's namespace.
+       *
+       * @instance
+       * @memberof PortletBase
+       * @type {string}
+       */
+      portletNamespace: {
+        validator: _metal.default.isString
+      },
+
+      /**
+       * Portlet's root node element.
+       *
+       * @instance
+       * @memberof PortletBase
+       * @type {Element}
+       */
+      rootNode: {
+        setter: _metalDom.default.toElement,
+        valueFn: 'rootNodeValueFn_'
+      }
+    };
+    var _default = PortletBase;
+    exports.default = _default;
+    //# sourceMappingURL=PortletBase.es.js.map
+  }
+});
+//# sourceMappingURL=PortletBase.es.js.map
+Liferay.Loader.define("frontend-js-web@4.0.38/liferay/DefaultEventHandler.es", ['module', 'exports', 'require', './PortletBase.es'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _PortletBase2 = _interopRequireDefault(require("./PortletBase.es"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    function _classCallCheck(instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+      }
+    }
+
+    function _defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    function _createClass(Constructor, protoProps, staticProps) {
+      if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;
+    }
+
+    function _possibleConstructorReturn(self, call) {
+      if (call && (_typeof(call) === "object" || typeof call === "function")) {
+        return call;
+      }return _assertThisInitialized(self);
+    }
+
+    function _assertThisInitialized(self) {
+      if (self === void 0) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }return self;
+    }
+
+    function _getPrototypeOf(o) {
+      _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+      };return _getPrototypeOf(o);
+    }
+
+    function _inherits(subClass, superClass) {
+      if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function");
+      }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });if (superClass) _setPrototypeOf(subClass, superClass);
+    }
+
+    function _setPrototypeOf(o, p) {
+      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;return o;
+      };return _setPrototypeOf(o, p);
+    }
+
+    var DefaultEventHandler = /*#__PURE__*/function (_PortletBase) {
+      _inherits(DefaultEventHandler, _PortletBase);
+
+      function DefaultEventHandler() {
+        _classCallCheck(this, DefaultEventHandler);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(DefaultEventHandler).apply(this, arguments));
+      }
+
+      _createClass(DefaultEventHandler, [{
+        key: "callAction",
+        value: function callAction(event) {
+          var itemData = event.data.item.data;
+
+          if (itemData && itemData.action && this[itemData.action]) {
+            this[itemData.action](itemData);
+          }
+        }
+      }, {
+        key: "handleActionItemClicked",
+        value: function handleActionItemClicked(event) {
+          this.callAction(event);
+        }
+      }, {
+        key: "handleCreationButtonClicked",
+        value: function handleCreationButtonClicked(event) {
+          var itemData = event.data.data;
+
+          if (itemData && itemData.action && this[itemData.action]) {
+            this[itemData.action](itemData);
+          }
+        }
+      }, {
+        key: "handleCreationMenuItemClicked",
+        value: function handleCreationMenuItemClicked(event) {
+          this.callAction(event);
+        }
+      }, {
+        key: "handleFilterItemClicked",
+        value: function handleFilterItemClicked(event) {
+          this.callAction(event);
+        }
+      }, {
+        key: "handleItemClicked",
+        value: function handleItemClicked(event) {
+          this.callAction(event);
+        }
+      }]);
+
+      return DefaultEventHandler;
+    }(_PortletBase2.default);
+
+    var _default = DefaultEventHandler;
+    exports.default = _default;
+    //# sourceMappingURL=DefaultEventHandler.es.js.map
+  }
+});
+//# sourceMappingURL=DefaultEventHandler.es.js.map
+Liferay.Loader.define('frontend-js-web@4.0.38/liferay/util/toggle_disabled', ['module', 'exports', 'require'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = toggleDisabled;
+
+    /**
+     * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+     *
+     * This library is free software; you can redistribute it and/or modify it under
+     * the terms of the GNU Lesser General Public License as published by the Free
+     * Software Foundation; either version 2.1 of the License, or (at your option)
+     * any later version.
+     *
+     * This library is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+     * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+     * details.
+     */
+
+    /**
+     * Toggles disabled class on received element
+     * @param nodes
+     * @param state
+     */
+    function toggleDisabled(nodes, state) {
+      if (typeof nodes === 'string') {
+        nodes = document.querySelectorAll(nodes);
+      } else if (nodes._node) {
+        nodes = [nodes._node];
+      } else if (nodes._nodes) {
+        nodes = nodes._nodes;
+      } else if (nodes.nodeType === Node.ELEMENT_NODE) {
+        nodes = [nodes];
+      }
+
+      nodes.forEach(function (node) {
+        node.disabled = state;
+
+        if (state) {
+          node.classList.add('disabled');
+        } else {
+          node.classList.remove('disabled');
+        }
+      });
+    }
+    //# sourceMappingURL=toggle_disabled.js.map
+  }
+});
+//# sourceMappingURL=toggle_disabled.js.map
+Liferay.Loader.define("frontend-js-web@4.0.38/liferay/ItemSelectorDialog.es", ['module', 'exports', 'require', 'frontend-js-metal-web$metal-component', 'frontend-js-metal-web$metal-state', './util/toggle_disabled'], function (module, exports, require) {
+  var define = undefined;
+  var global = window;
+  {
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = void 0;
+
+    var _metalComponent = _interopRequireDefault(require("frontend-js-metal-web$metal-component"));
+
+    var _metalState = require("frontend-js-metal-web$metal-state");
+
+    var _toggle_disabled = _interopRequireDefault(require("./util/toggle_disabled"));
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+      if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+        _typeof = function _typeof(obj) {
+          return typeof obj;
+        };
+      } else {
+        _typeof = function _typeof(obj) {
+          return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+      }return _typeof(obj);
+    }
+
+    function ownKeys(object, enumerableOnly) {
+      var keys = Object.keys(object);if (Object.getOwnPropertySymbols) {
+        var symbols = Object.getOwnPropertySymbols(object);if (enumerableOnly) symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });keys.push.apply(keys, symbols);
+      }return keys;
+    }
+
+    function _objectSpread(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i] != null ? arguments[i] : {};if (i % 2) {
+          ownKeys(Object(source), true).forEach(function (key) {
+            _defineProperty(target, key, source[key]);
+          });
+        } else if (Object.getOwnPropertyDescriptors) {
+          Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+        } else {
+          ownKeys(Object(source)).forEach(function (key) {
+            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+          });
+        }
+      }return target;
+    }
+
+    function _defineProperty(obj, key, value) {
+      if (key in obj) {
+        Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+      } else {
+        obj[key] = value;
+      }return obj;
+    }
+
+    function _classCallCheck(instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+      }
+    }
+
+    function _defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    function _createClass(Constructor, protoProps, staticProps) {
+      if (protoProps) _defineProperties(Constructor.prototype, protoProps);if (staticProps) _defineProperties(Constructor, staticProps);return Constructor;
+    }
+
+    function _possibleConstructorReturn(self, call) {
+      if (call && (_typeof(call) === "object" || typeof call === "function")) {
+        return call;
+      }return _assertThisInitialized(self);
+    }
+
+    function _assertThisInitialized(self) {
+      if (self === void 0) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }return self;
+    }
+
+    function _getPrototypeOf(o) {
+      _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+      };return _getPrototypeOf(o);
+    }
+
+    function _inherits(subClass, superClass) {
+      if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function");
+      }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });if (superClass) _setPrototypeOf(subClass, superClass);
+    }
+
+    function _setPrototypeOf(o, p) {
+      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;return o;
+      };return _setPrototypeOf(o, p);
+    }
+
+    /**
+     * Shows a dialog and handles the selected item.
+     */
+    var ItemSelectorDialog = /*#__PURE__*/function (_Component) {
+      _inherits(ItemSelectorDialog, _Component);
+
+      function ItemSelectorDialog() {
+        _classCallCheck(this, ItemSelectorDialog);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(ItemSelectorDialog).apply(this, arguments));
+      }
+
+      _createClass(ItemSelectorDialog, [{
+        key: "close",
+
+        /**
+         * Closes the dialog.
+         */
+        value: function close() {
+          Liferay.Util.getWindow(this.eventName).hide();
+        }
+        /**
+         * Opens the dialog.
+         */
+
+      }, {
+        key: "open",
+        value: function open() {
+          var _this = this;
+
+          this._currentItem = null;
+          this._selectedItem = null;
+          var eventName = this.eventName;
+
+          var dialogConfig = this._getDialogConfig();
+
+          Liferay.Util.selectEntity({
+            dialog: _objectSpread(_objectSpread({}, dialogConfig), {
+              on: {
+                click: function click(event) {
+                  event.domEvent.preventDefault();
+                },
+                visibleChange: function visibleChange(event) {
+                  if (!event.newVal) {
+                    _this.selectedItem = _this._selectedItem;
+
+                    _this.emit('selectedItemChange', {
+                      selectedItem: _this.selectedItem
+                    });
+                  }
+
+                  _this.emit('visibleChange', {
+                    visible: event.newVal
+                  });
+                }
+              }
+            }),
+            eventName: eventName,
+            id: eventName,
+            stack: !this.zIndex,
+            title: this.title,
+            uri: this.url
+          }, this._onItemSelected.bind(this));
+        }
+      }, {
+        key: "_getDialogConfig",
+        value: function _getDialogConfig() {
+          var _this2 = this;
+
+          var dialogConfig = {
+            constrain: true,
+            cssClass: this.dialogClasses,
+            destroyOnHide: true,
+            modal: true,
+            zIndex: this.zIndex
+          };
+
+          if (!this.singleSelect) {
+            var dialogFooter = [{
+              cssClass: 'btn-secondary close-modal',
+              id: 'cancelButton',
+              label: this.buttonCancelLabel,
+              on: {
+                click: function click() {
+                  _this2.close();
+                }
+              }
+            }, {
+              cssClass: 'btn-primary',
+              disabled: true,
+              id: 'addButton',
+              label: this.buttonAddLabel,
+              on: {
+                click: function click() {
+                  _this2._selectedItem = _this2._currentItem;
+
+                  _this2.close();
+                }
+              }
+            }];
+            dialogConfig['toolbars.footer'] = dialogFooter;
+          }
+
+          return dialogConfig;
+        }
+        /**
+         * Saves the current selected item in the dialog and disables the Add
+         * button.
+         *
+         * @param {EventFacade} event The event.
+         * @private
+         */
+
+      }, {
+        key: "_onItemSelected",
+        value: function _onItemSelected(event) {
+          var currentItem = event.data;
+
+          if (this.singleSelect) {
+            this._selectedItem = currentItem;
+            this.close();
+          } else {
+            var dialog = Liferay.Util.getWindow(this.eventName);
+            var addButton = dialog.getToolbar('footer').get('boundingBox').one('#addButton');
+            (0, _toggle_disabled.default)(addButton, !currentItem);
+          }
+
+          this._currentItem = currentItem;
+        }
+      }]);
+
+      return ItemSelectorDialog;
+    }(_metalComponent.default);
+    /**
+     * State definition.
+     *
+     * @static
+     * @type {!Object}
+     */
+
+    ItemSelectorDialog.STATE = {
+      /**
+       * Label for the Add button.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      buttonAddLabel: _metalState.Config.string().value('Add'),
+
+      /**
+       * Label for the Cancel button.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      buttonCancelLabel: _metalState.Config.string().value('Cancel'),
+
+      /**
+       * CSS classes to pass to the dialog.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      dialogClasses: _metalState.Config.string(),
+
+      /**
+       * Event name.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      eventName: _metalState.Config.string().required(),
+
+      /**
+       * The selected item(s) in the dialog.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {Object|Object[]}
+       */
+      selectedItem: _metalState.Config.oneOfType([_metalState.Config.object(), _metalState.Config.arrayOf(_metalState.Config.object())]),
+
+      /**
+       * Enables single selection of item.
+       * @type {boolean}
+       */
+      singleSelect: _metalState.Config.bool().value(false),
+
+      /**
+       * Dialog's title.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      title: _metalState.Config.string().value('Select\x20File'),
+
+      /**
+       * URL that opens the dialog.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {String}
+       */
+      url: _metalState.Config.string().required(),
+
+      /**
+       * Dialog's zIndex.
+       *
+       * @instance
+       * @memberof ItemSelectorDialog
+       * @type {Number}
+       */
+      zIndex: _metalState.Config.number()
+    };
+    var _default = ItemSelectorDialog;
+    exports.default = _default;
+    //# sourceMappingURL=ItemSelectorDialog.es.js.map
+  }
+});
+//# sourceMappingURL=ItemSelectorDialog.es.js.map
+Liferay.Loader.define('frontend-taglib-clay$classnames@2.2.6/index', ['module', 'exports', 'require'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		/*!
+    Copyright (c) 2017 Jed Watson.
+    Licensed under the MIT License (MIT), see
+    http://jedwatson.github.io/classnames
+  */
+		/* global define */
+
+		(function () {
+			'use strict';
+
+			var hasOwn = {}.hasOwnProperty;
+
+			function classNames() {
+				var classes = [];
+
+				for (var i = 0; i < arguments.length; i++) {
+					var arg = arguments[i];
+					if (!arg) continue;
+
+					var argType = typeof arg;
+
+					if (argType === 'string' || argType === 'number') {
+						classes.push(arg);
+					} else if (Array.isArray(arg) && arg.length) {
+						var inner = classNames.apply(null, arg);
+						if (inner) {
+							classes.push(inner);
+						}
+					} else if (argType === 'object') {
+						for (var key in arg) {
+							if (hasOwn.call(arg, key) && arg[key]) {
+								classes.push(key);
+							}
+						}
+					}
+				}
+
+				return classes.join(' ');
+			}
+
+			if (typeof module !== 'undefined' && module.exports) {
+				classNames.default = classNames;
+				module.exports = classNames;
+			} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+				// register as 'classnames', consistent with npm package name
+				define('classnames', [], function () {
+					return classNames;
+				});
+			} else {
+				window.classNames = classNames;
+			}
+		})();
+	}
+});
+//# sourceMappingURL=index.js.map
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+'use strict';
+/* eslint-disable no-unused-vars */
+
+Liferay.Loader.define('frontend-js-react-web$object-assign@4.1.1/index', ['module', 'exports', 'require'], function (module, exports, require) {
+	var define = undefined;
+	var global = window;
+	{
+		var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+		function toObject(val) {
+			if (val === null || val === undefined) {
+				throw new TypeError('Object.assign cannot be called with null or undefined');
+			}
+
+			return Object(val);
+		}
+
+		function shouldUseNative() {
+			try {
+				if (!Object.assign) {
+					return false;
+				}
+
+				// Detect buggy property enumeration order in older V8 versions.
+
+				// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+				var test1 = new String('abc'); // eslint-disable-line no-new-wrappers
+				test1[5] = 'de';
+				if (Object.getOwnPropertyNames(test1)[0] === '5') {
+					return false;
+				}
+
+				// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+				var test2 = {};
+				for (var i = 0; i < 10; i++) {
+					test2['_' + String.fromCharCode(i)] = i;
+				}
+				var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+					return test2[n];
+				});
+				if (order2.join('') !== '0123456789') {
+					return false;
+				}
+
+				// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+				var test3 = {};
+				'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+					test3[letter] = letter;
+				});
+				if (Object.keys(Object.assign({}, test3)).join('') !== 'abcdefghijklmnopqrst') {
+					return false;
+				}
+
+				return true;
+			} catch (err) {
+				// We don't expect any of the above to throw, but better to be safe.
+				return false;
+			}
+		}
+
+		module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+			var from;
+			var to = toObject(target);
+			var symbols;
+
+			for (var s = 1; s < arguments.length; s++) {
+				from = Object(arguments[s]);
+
+				for (var key in from) {
+					if (hasOwnProperty.call(from, key)) {
+						to[key] = from[key];
+					}
+				}
+
+				if (getOwnPropertySymbols) {
+					symbols = getOwnPropertySymbols(from);
+					for (var i = 0; i < symbols.length; i++) {
+						if (propIsEnumerable.call(from, symbols[i])) {
+							to[symbols[i]] = from[symbols[i]];
+						}
+					}
+				}
+			}
+
+			return to;
+		};
+	}
+});
+//# sourceMappingURL=index.js.map

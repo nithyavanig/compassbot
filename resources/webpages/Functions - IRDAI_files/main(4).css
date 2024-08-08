@@ -1,0 +1,98 @@
+.portlet-search-results .display-card .card-category {
+  color: #6b6c7e;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase; }
+
+.portlet-search-results .display-card .card-description {
+  font-size: 12px;
+  margin-top: 8px; }
+
+.portlet-search-results .display-card .card-subtitle {
+  font-size: 12px; }
+
+.portlet-search-results .display-compact ul {
+  list-style: none;
+  padding: 0; }
+  .portlet-search-results .display-compact ul li {
+    font-size: 14px;
+    margin: 16px 0; }
+
+.portlet-search-results .display-list .list-group .list-group-item .expand-details {
+  margin-bottom: 0; }
+
+.portlet-search-results .display-list .list-group .list-group-item .list-group-title {
+  margin-top: 0; }
+
+.portlet-search-results .display-list .list-group .list-group-item .search-results-metadata .list-group-text a {
+  font-size: 12px;
+  font-weight: 400; }
+  .portlet-search-results .display-list .list-group .list-group-item .search-results-metadata .list-group-text a:focus {
+    box-shadow: 0 0 0 0; }
+
+.portlet-search-results .display-list .table-details td,
+.portlet-search-results .display-list .table-details th {
+  padding-bottom: 0;
+  padding-top: 0; }
+
+.portlet-search-results .display-list .table-details .key-column {
+  text-align: right;
+  width: 15%;
+  word-break: break-all; }
+
+.portlet-search-results .search-total-label {
+  margin: 16px 0; }
+
+.portlet-search-bar .alert {
+  margin-bottom: 0; }
+
+.portlet-search-bar .search-bar .form-group.input-group-item {
+  margin-bottom: 0; }
+
+.portlet-search-bar .search-bar-keywords-input-wrapper {
+  min-width: 6.25rem; }
+
+.portlet-search-bar .search-bar-search-select-wrapper {
+  max-width: 9.375rem; }
+
+.search-facet .custom-control-label.facet-term-unselected,
+.search-facet .term-name.facet-term-unselected {
+  font-weight: 400; }
+
+.search-facet .custom-control-label.facet-term-selected,
+.search-facet .term-name.facet-term-selected {
+  font-weight: 600; }
+
+.search-facet .custom-control-label.label.label-lg,
+.search-facet .term-name.label.label-lg {
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 8px; }
+
+.search-facet .facet-clear-btn {
+  font-weight: 600;
+  font-size: 0.875rem; }
+
+.search-facet.search-facet-display-label .label-container {
+  margin-bottom: 16px; }
+
+.search-facet.search-facet-display-label .term-name.facet-term-selected, .search-facet.search-facet-display-label .term-name.facet-term-unselected {
+  font-weight: 600; }
+
+.search-facet .tag-cloud .term-name {
+  line-height: 1.2; }
+
+.portlet-search .scope-selector {
+  margin-left: 12px;
+  max-width: 144px; }
+
+.portlet-search .search-button-field-wrapper {
+  margin-bottom: 1.5rem; }
+
+.portlet-search .search-input-group {
+  margin-bottom: 0; }
+  .portlet-search .search-input-group .form-group-item {
+    margin-right: 0; }
+
+.portlet-suggestions .changed-keyword {
+  font-weight: bold; }

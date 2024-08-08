@@ -1,0 +1,297 @@
+(function (jQuery) {
+
+  Drupal.behaviors.customEvent = {
+    attach: function (context, settings) {
+        
+       		 
+
+        /*   //var originalSize = jQuery('div').css('font-size');
+           var p_currentSize = jQuery('p').css('font-size');
+           var s_currentSize = jQuery('span').css('font-size');
+           var a_currentSize = jQuery('a').css('font-size');
+           var img_currentSize = jQuery('img').css('font-size');
+
+           var h1_currentSize = jQuery('h1').css('font-size');
+           var h2_currentSize = jQuery('h2').css('font-size');
+           var h3_currentSize = jQuery('h3').css('font-size');
+           var h4_currentSize = jQuery('h4').css('font-size');
+           var h5_currentSize = jQuery('h5').css('font-size');
+           var h6_currentSize = jQuery('h6').css('font-size');
+           // reset
+            jQuery(".resetMe").click(function(){
+				
+			  
+              //jQuery('div').css('font-size', originalSize);
+              jQuery('s').css('font-size', s_currentSize);
+              jQuery('p').css('font-size', p_currentSize);
+              jQuery('a').css('font-size', a_currentSize);
+              jQuery('img').css('font-size', img_currentSize);
+              jQuery('h1').css('font-size', h1_currentSize);
+              jQuery('h2').css('font-size', h2_currentSize);
+              jQuery('h3').css('font-size', h3_currentSize);
+              jQuery('h4').css('font-size', h4_currentSize);
+              jQuery('h5').css('font-size', h5_currentSize);
+              jQuery('h6').css('font-size', h6_currentSize);
+              jQuery("body").removeClass("body-grayscale");
+              jQuery("body").removeClass("body-negative");
+
+            });
+
+            // Increase Font Size
+            jQuery(".increase").click(function(){
+					  
+			  
+           var currentSize = jQuery('div').css('font-size');
+           var p_currentSize = jQuery('p').css('font-size');
+           var s_currentSize = jQuery('span').css('font-size');
+           var a_currentSize = jQuery('a').css('font-size');
+           var img_currentSize = jQuery('img').css('font-size');
+
+           var h1_currentSize = jQuery('h1').css('font-size');
+           var h2_currentSize = jQuery('h2').css('font-size');
+           var h3_currentSize = jQuery('h3').css('font-size');
+           var h4_currentSize = jQuery('h4').css('font-size');
+           var h5_currentSize = jQuery('h5').css('font-size');
+           var h6_currentSize = jQuery('h6').css('font-size');
+
+           //var currentSize = parseFloat(currentSize)*1.2;
+           var p_currentSize = parseFloat(p_currentSize)*1.2;
+           var s_currentSize = parseFloat(s_currentSize)*1.2;
+           var a_currentSize = parseFloat(a_currentSize)*1.2;
+           var img_currentSize = parseFloat(img_currentSize)*1.2;
+
+           var h1_currentSize = parseFloat(h1_currentSize)*1.2;
+           var h2_currentSize = parseFloat(h2_currentSize)*1.2;
+           var h3_currentSize = parseFloat(h3_currentSize)*1.2;
+           var h4_currentSize = parseFloat(h4_currentSize)*1.2;
+           var h5_currentSize = parseFloat(h5_currentSize)*1.2;
+           var h6_currentSize = parseFloat(h6_currentSize)*1.2;
+		   
+
+            //jQuery('div').css('font-size', currentSize);
+            jQuery('p').css('font-size', p_currentSize);
+            jQuery('s').css('font-size', s_currentSize);
+            jQuery('a').css('font-size', a_currentSize);
+            jQuery('img').css('font-size', img_currentSize);
+
+            jQuery('h1').css('font-size', h1_currentSize);
+            jQuery('h2').css('font-size', h2_currentSize);
+            jQuery('h3').css('font-size', h3_currentSize);
+            jQuery('h4').css('font-size', h4_currentSize);
+            jQuery('h5').css('font-size', h5_currentSize);
+            jQuery('h6').css('font-size', h6_currentSize); 
+			//jQuery(".dflex.rsp").css("font-size", "14px"); 
+
+            return false;
+           });
+
+            // Decrease Font Size
+            jQuery(".decrease").click(function(){
+            //var currentFontSize = jQuery('div').css('font-size');
+
+
+            //var currentSize = jQuery('div').css('font-size');
+            var p_currentSize = jQuery('p').css('font-size');
+            var s_currentSize = jQuery('span').css('font-size');
+            var a_currentSize = jQuery('a').css('font-size');
+            var img_currentSize = jQuery('img').css('font-size');
+
+            var h1_currentSize = jQuery('h1').css('font-size');
+            var h2_currentSize = jQuery('h2').css('font-size');
+            var h3_currentSize = jQuery('h3').css('font-size');
+            var h4_currentSize = jQuery('h4').css('font-size');
+            var h5_currentSize = jQuery('h5').css('font-size');
+            var h6_currentSize = jQuery('h6').css('font-size');
+
+            var currentSize = parseFloat(currentSize)*0.8;
+            var p_currentSize = parseFloat(p_currentSize)*0.8;
+            var s_currentSize = parseFloat(s_currentSize)*0.8;
+            var a_currentSize = parseFloat(a_currentSize)*0.8;
+            var img_currentSize = parseFloat(img_currentSize)*0.8;
+
+            var h1_currentSize = parseFloat(h1_currentSize)*0.8;
+            var h2_currentSize = parseFloat(h2_currentSize)*0.8;
+            var h3_currentSize = parseFloat(h3_currentSize)*0.8;
+            var h4_currentSize = parseFloat(h4_currentSize)*0.8;
+            var h5_currentSize = parseFloat(h5_currentSize)*0.8;
+            var h6_currentSize = parseFloat(h6_currentSize)*0.8;
+
+            //jQuery('div').css('font-size', currentSize);
+            jQuery('p').css('font-size', p_currentSize);
+            jQuery('s').css('font-size', s_currentSize);
+            jQuery('a').css('font-size', a_currentSize);
+            jQuery('img').css('font-size', img_currentSize);
+            jQuery('h1').css('font-size', h1_currentSize);
+            jQuery('h2').css('font-size', h2_currentSize);
+            jQuery('h3').css('font-size', h3_currentSize);
+            jQuery('h4').css('font-size', h4_currentSize);
+            jQuery('h5').css('font-size', h5_currentSize);
+            jQuery('h6').css('font-size', h6_currentSize);
+
+            return false;
+
+            });*/
+			
+		
+    			jQuery(".grayscale").click(function(){
+    				
+    			  jQuery("body").toggleClass("body-grayscale"); 
+    			  
+    			  return false;
+			    });
+			
+			jQuery(".negative").click(function(){
+				
+			  jQuery("body").toggleClass("body-negative");  
+			  
+			  return false;
+			});
+			
+			var size=parseInt(jQuery('p').css('font-size'));
+            var size_h4=parseInt(jQuery('h4').css('font-size'));
+            var size_h2=parseInt(jQuery('.schms').css('font-size'));
+            var size_h1=parseInt(jQuery('h1 span').css('font-size'));
+            var size_menu=parseInt(jQuery('.menu-item.menu-item--expanded span').css('font-size'));
+            
+          
+        jQuery(".increase").on("click",function(){
+         
+          size+=1;
+          size_h4+=5;
+          size_h2+=1;
+          size_h1+=1;
+          size_menu+=1;
+           jQuery("a").css("font-size",size + "px");
+           jQuery("table").css("font-size",size + "px");
+           jQuery("td").css("font-size",size + "px");
+           jQuery("p").css("font-size",size + "px");
+           jQuery("span").css("font-size",size + "px");
+           jQuery("h3").css("font-size",size + "px");
+            jQuery(".main-heading").css("font-size",size_h4 + "px");
+            jQuery("h5").css("font-size",size + "px");
+             jQuery("h2").css("font-size",size_h2 + "px");
+             jQuery("h1 span").css("font-size",size_h1 + "px");
+             jQuery(".menu-item.menu-item--expanded span").css("font-size",size_menu + "px");
+           
+        });
+        jQuery(".resetMe").on("click",function(){
+          window.location.reload();
+        });
+        jQuery(".decrease").on("click",function(){
+          
+          size-=1;
+          size_h4-=5;
+          size_h2-=2;
+          size_h1-=2;
+          size_menu-=1;
+          if(size>=0){
+            jQuery("a").css("font-size",size + "px");
+            jQuery("table").css("font-size",size + "px");
+            jQuery("td").css("font-size",size + "px");
+           jQuery("p").css("font-size",size + "px");
+           jQuery("span").css("font-size",size + "px");
+           jQuery("h3").css("font-size",size + "px");
+            jQuery(".main-heading").css("font-size",size_h4 + "px");
+            jQuery("h5").css("font-size",size + "px");
+             jQuery("h2").css("font-size",size_h2 + "px");
+             jQuery("h1 span").css("font-size",size_h1 + "px");
+             jQuery(".menu-item.menu-item--expanded span").css("font-size",size_menu + "px");
+          }else{
+            alert("VLAUE IS MINUS SO RESET TO 14px");
+            size=14
+            jQuery("p").css("font-size",size+ "px");
+          }
+        });
+    }
+  };
+
+}(jQuery));
+
+       
+
+jQuery(document).ready(function(){
+    
+
+	
+	jQuery('.less-more-data').click(function(){ 
+		
+      jQuery(this).parent().removeAttr("open");    
+	  
+    });
+	
+/*   var question = jQuery('.faq-item .faqfield-question');
+  var answer = jQuery('.faq-item .faqfield-answer');
+  
+ jQuery(question).click(function(){
+	 
+
+	if(jQuery(this).hasClass("faq-ques-active")) {
+	  jQuery(this).removeClass('faq-ques-active'); 
+	  jQuery(this).next('.faqfield-answer.faq-active').removeClass('faq-active').hide();  
+	}else {
+	jQuery('.faqfield-question').removeClass('faq-ques-active');
+    jQuery(this).addClass('faq-ques-active');  
+    jQuery('.faqfield-answer').removeClass('faq-active'); 
+    jQuery(answer).slideUp();
+    jQuery(this).next().addClass('faq-active').slideToggle('fast'); 
+	
+	} 
+
+	
+  }); */
+  
+  
+  	jQuery(".more").toggle(function(){
+    jQuery(this).text("less..").siblings(".complete").show();    
+}, function(){
+    jQuery(this).text("more..").siblings(".complete").hide();    
+});
+
+/* jQuery("#myModal .close").click(function(){
+	 jQuery("body").removeClass("modal-open");
+	jQuery("#myModal").hide(); 
+
+	}); */
+	
+ });
+ 
+ function sticky_relocate() {
+  var window_top = jQuery(window).scrollTop();
+  var div_top = jQuery('#content').offset().top;
+  if (window_top > div_top) {
+    jQuery('#sidebar-first').addClass('stick');
+  } else {
+    jQuery('#sidebar-first').removeClass('stick');
+  }
+}
+
+jQuery(function($) {
+  $(window).scroll(sticky_relocate);
+  sticky_relocate();
+});
+ 
+
+
+
+
+ 
+jQuery(document).ready(function($){ 
+    jQuery(window).scroll(function(){ 
+        if ($(this).scrollTop() > 100) { 
+            jQuery('#scroll').fadeIn(); 
+        } else { 
+            jQuery('#scroll').fadeOut(); 
+        } 
+    }); 
+jQuery('#scroll').click(function(){ 
+        jQuery("html, body").animate({ scrollTop: 0 }, 600); 
+        return false; 
+    }); 
+});
+ 
+ 
+
+ 
+ 
+ 
+ 
