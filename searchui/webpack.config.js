@@ -34,5 +34,14 @@ module.exports = {
     hot: true, // hot reloading
     port: 3000, // port on which server will run
     open: true, // open browser automatically on start
+    allowedHosts: ["http://127.0.0.1:3000", "http://localhost:3000"],
+    proxy: [
+      {
+        context: ["/"],
+        target: "http://127.0.0.1:8005",
+        changeOrigin: true,
+        secure: false,
+      },
+    ],
   },
 };

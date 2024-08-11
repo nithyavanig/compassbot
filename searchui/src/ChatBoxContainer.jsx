@@ -6,6 +6,7 @@ import enterIcon from "../assets/right-chevron.png";
 import { sampleResponse } from "./response";
 import { ChatBotRelay } from "./ChatBotRelay";
 import { FaCircleChevronRight } from "react-icons/fa6";
+import axios from "axios";
 
 const blue = {
   100: "#DAECFF",
@@ -79,16 +80,27 @@ export const ChatBoxContainer = (props) => {
     setFocused(true);
     setCurrentPromt(event.target.value);
   };
-  const callSearchAPI = () => {
+  const callSearchAPI = async () => {
     const allQns = [...allPrompts];
     allQns.push(currentPrompt);
-    setAllPrompts(allQns);
-    setShowResponse(true);
-    const allResp = [...allResponses];
-    allResp.push(sampleResponse);
-    setAllResponses(allResp);
-    homePage(false);
-    setFirstRender(false);
+    //getGPTResponse/${currentPrompt}
+    axios
+      .get(`http://localhost:8005/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        timeout: 25000,
+      })
+      .then((response) => {
+        setAllPrompts(allQns);
+        setShowResponse(true);
+        const allResp = [...allResponses];
+        allResp.push(response.data?.message);
+        setAllResponses(allResp);
+        homePage(false);
+        setFirstRender(false);
+      });
   };
   return (
     <>
