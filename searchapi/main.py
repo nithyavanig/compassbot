@@ -1,9 +1,12 @@
+import os
 from fastapi import FastAPI
 import uvicorn
 import openai
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Configure logging
@@ -39,7 +42,7 @@ def read_item(item_id: int, q: str = None):
 @app.get("/getGPTResponse/{userQuery}")
 def callChatGPT(userQuery : str):
     print("hello gpt")    
-    openai.api_key = 'sk-proj-FgCDLXzLQooPb9CqqcwHT3BlbkFJlKcHVcSCIdVSMhGEFEX8'
+    openai.api_key = os.getenv('OPENAPI_KEY')
     chat = openai.ChatCompletion.create(
             model="gpt-3.5-turbo", messages=[
         {
