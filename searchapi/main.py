@@ -5,8 +5,9 @@ import openai
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
-from dotenv import load_dotenv
-load_dotenv()
+import sys
+from dotenv import load_dotenv 
+print(sys.path)
 
 
 # Configure logging
