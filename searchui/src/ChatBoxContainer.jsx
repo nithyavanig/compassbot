@@ -85,10 +85,13 @@ export const ChatBoxContainer = (props) => {
     allQns.push(currentPrompt);
     //getGPTResponse/${currentPrompt}
     axios
-      .get(`http://localhost:8005/`, {
+      .get(`http://localhost:8005/prompt/query`, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+        },
+        params: {
+          prompt: currentPrompt,
         },
         timeout: 25000,
       })

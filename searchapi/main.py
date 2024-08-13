@@ -1,11 +1,13 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 import uvicorn
 import openai
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -26,6 +28,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+model = GPT2LMHeadModel.from_pretrained("gpt2")
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+
 @app.get("/")
 def read_root():
     message = {"msg": "hello world"}
@@ -34,24 +39,26 @@ def read_root():
 # Response(content=message, media_type='application/json')
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/prompt/query")
+def read_query(prompt: str = Query(None)):
+    print("userQuery" + str(prompt))
+    responseFromLLM = callChatGPT(prompt)
+    return JSONResponse(content={"message": responseFromLLM})
 
 
-@app.get("/getGPTResponse/{userQuery}")
+# @app.get("/getGPTResponse/{userQuery}")
 def callChatGPT(userQuery : str):
     print("hello gpt")    
     openai.api_key = os.getenv('OPENAPI_KEY')
-    chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[
-        {
-            "role": "user",
-            "content": userQuery,
-        }
-    ]
-    )
-    reply = chat.choices[0].message.content
+    # Encode the input prompt
+    input_ids = tokenizer.encode(userQuery, return_tensors='pt')
+
+    # Generate a response
+    output = model.generate(input_ids, max_length=50, num_return_sequences=1)
+
+    # Decode the generated text
+    reply = tokenizer.decode(output[0], skip_special_tokens=True)
+    print(f"GPT-2: {reply}")
     print(f"ChatGPT: {reply}")
     return reply
 
