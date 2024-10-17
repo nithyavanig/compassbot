@@ -1,8 +1,9 @@
 import React from "react";
 import { IoMenu } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 export const Header = (props) => {
-  const { user } = props;
+  const { user, fromLandingPage } = props;
   return (
     <div className="header-container">
       {/* { Logo} */}
@@ -11,6 +12,11 @@ export const Header = (props) => {
           <span>Wells Fargo Compass</span>
         </div>
         <div className="header-top-right-container">
+          {fromLandingPage && (
+            <div className="upload-data-link">
+              <Link to="/upload">Use your Data</Link>
+            </div>
+          )}
           <div className="user-image">
             <img src={user.img}></img>
           </div>

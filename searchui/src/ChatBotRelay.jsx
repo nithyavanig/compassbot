@@ -3,7 +3,7 @@ import { FaUser } from "react-icons/fa";
 import { RiRobot2Fill } from "react-icons/ri";
 
 export const ChatBotRelay = (props) => {
-  const { prompt, response } = props;
+  const { prompt, response, loading } = props;
   return (
     <div className="response-chat-container">
       <div className="user-prompt-box">

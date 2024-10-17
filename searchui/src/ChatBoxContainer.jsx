@@ -6,6 +6,7 @@ import enterIcon from "../assets/right-chevron.png";
 import { sampleResponse } from "./response";
 import { ChatBotRelay } from "./ChatBotRelay";
 import { FaCircleChevronRight } from "react-icons/fa6";
+import { PiSpinnerGap } from "react-icons/pi";
 import axios from "axios";
 
 const blue = {
@@ -75,6 +76,7 @@ export const ChatBoxContainer = (props) => {
   const [showResponse, setShowResponse] = useState(false);
   const [allResponses, setAllResponses] = useState([]);
   const [isFirstRender, setFirstRender] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleValueChange = (event) => {
     setFocused(true);
@@ -84,6 +86,8 @@ export const ChatBoxContainer = (props) => {
     const allQns = [...allPrompts];
     allQns.push(currentPrompt);
     //getGPTResponse/${currentPrompt}
+    setLoading(true);
+    homePage(false);
     axios
       .get(`http://localhost:8005/prompt/query`, {
         headers: {
@@ -101,13 +105,14 @@ export const ChatBoxContainer = (props) => {
         const allResp = [...allResponses];
         allResp.push(response.data?.message);
         setAllResponses(allResp);
-        homePage(false);
+        // homePage(false);
         setFirstRender(false);
+        setLoading(false);
       });
   };
   return (
     <>
-      {!isFirstRender && (
+      {!isFirstRender && !loading && (
         <div className="chat-box-wrapper">
           {showResponse &&
             allPrompts.map((userPromt, index) => {
@@ -120,21 +125,28 @@ export const ChatBoxContainer = (props) => {
             })}
         </div>
       )}
-      <div className="prompt-container">
-        <Textarea
-          aria-label="empty textarea"
-          placeholder="Ask me anything ..."
-          minRows={3}
-          maxRows={10}
-          onChange={handleValueChange}
-        />
-        {isFocused && currentPrompt?.length > 0 && (
-          <div onClick={callSearchAPI}>
-            {/* <img src={enterIcon} width="20" height="20"></img> */}
-            <FaCircleChevronRight color={"#3399FF"} size={25} />
-          </div>
-        )}
-      </div>
+      {!loading && (
+        <div className="prompt-container">
+          <Textarea
+            aria-label="empty textarea"
+            placeholder="Ask me anything ..."
+            minRows={3}
+            maxRows={10}
+            onChange={handleValueChange}
+          />
+          {isFocused && currentPrompt?.length > 0 && (
+            <div onClick={callSearchAPI}>
+              {/* <img src={enterIcon} width="20" height="20"></img> */}
+              <FaCircleChevronRight color={"#3399FF"} size={25} />
+            </div>
+          )}
+        </div>
+      )}
+      {loading && (
+        <div className="loading-icon-wrapper">
+          <PiSpinnerGap size={60} color={"#9b9a9e"} />
+        </div>
+      )}
     </>
   );
 };
