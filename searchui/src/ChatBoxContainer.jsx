@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base/TextareaAutosize";
 import { styled } from "@mui/system";
+import { TiAttachment } from "react-icons/ti";
 // @ts-ignore
 import enterIcon from "../assets/right-chevron.png";
 import { sampleResponse } from "./response";
@@ -77,6 +78,7 @@ export const ChatBoxContainer = (props) => {
   const [allResponses, setAllResponses] = useState([]);
   const [isFirstRender, setFirstRender] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [isBackgroundAttached, setBackgroundAttached] = useState(true);
 
   const handleValueChange = (event) => {
     setFocused(true);
@@ -127,19 +129,29 @@ export const ChatBoxContainer = (props) => {
       )}
       {!loading && (
         <div className="prompt-container">
-          <Textarea
-            aria-label="empty textarea"
-            placeholder="Ask me anything ..."
-            minRows={3}
-            maxRows={10}
-            onChange={handleValueChange}
-          />
-          {isFocused && currentPrompt?.length > 0 && (
-            <div onClick={callSearchAPI}>
-              {/* <img src={enterIcon} width="20" height="20"></img> */}
-              <FaCircleChevronRight color={"#3399FF"} size={25} />
+          {isBackgroundAttached && (
+            <div>
+              <TiAttachment size={25} color={"#6699CC"} />
+              Background Info attached
             </div>
           )}
+          <div className="prompt-cont-area">
+            <div>
+              <Textarea
+                aria-label="empty textarea"
+                placeholder="Ask me anything ..."
+                minRows={3}
+                maxRows={10}
+                onChange={handleValueChange}
+              />
+            </div>
+            {isFocused && currentPrompt?.length > 0 && (
+              <div onClick={callSearchAPI}>
+                {/* <img src={enterIcon} width="20" height="20"></img> */}
+                <FaCircleChevronRight color={"#3399FF"} size={25} />
+              </div>
+            )}
+          </div>
         </div>
       )}
       {loading && (

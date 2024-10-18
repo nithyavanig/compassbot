@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Header } from "./Header";
 import { mockUser } from "./HomePage";
 import { TextareaAutosize as BaseTextareaAutosize } from "@mui/base";
@@ -111,6 +111,17 @@ const Button = styled(BaseButton)(
 );
 
 export const UploadData = () => {
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const handleFileChange = (event) => {
+    const files = event.target.files;
+    const filesArray = Array.from(files);
+    setUploadedFiles((prevFiles) => [...prevFiles, ...filesArray]);
+  };
+
+  const handleButtonClick = () => {
+    document.getElementById("fileInput").click();
+  };
+
   return (
     <div>
       <Header user={mockUser} />
@@ -125,13 +136,35 @@ export const UploadData = () => {
         </div>
         <div>
           {/* <span>Upload pdfs</span> */}
-          <TextareaAutosize
+          <Button onClick={handleButtonClick}>Upload Pdfs here</Button>
+          <input
+            type="file"
+            id="fileInput"
+            accept="application/pdf"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+            multiple
+          />
+          {/* <TextareaAutosize
             aria-label="empty textarea"
             placeholder="Upload your pdfs here"
-          />
+          /> */}
+          <div>
+            {uploadedFiles.map((file, index) => (
+              <div key={index} style={{ margin: "10px 0" }}>
+                <p>{file.name}</p>
+                {/* <embed
+                  src={URL.createObjectURL(file)}
+                  type="application/pdf"
+                  width="100%"
+                  height="500px"
+                /> */}
+              </div>
+            ))}
+          </div>
         </div>
         <div>
-          <Button>Save</Button>
+          <Button>Save and GoBack to chat</Button>
         </div>
       </div>
     </div>
